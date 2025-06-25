@@ -11,7 +11,6 @@
 		849D531C2E0AFCD8000A09B8 /* EventTrackerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53192E0AFCD8000A09B8 /* EventTrackerUITestsLaunchTests.swift */; };
 		849D531F2E0AFCDC000A09B8 /* EventTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D531D2E0AFCDC000A09B8 /* EventTrackerTests.swift */; };
 		849D532D2E0AFD0A000A09B8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 849D53262E0AFD0A000A09B8 /* Assets.xcassets */; };
-		849D532F2E0AFD0A000A09B8 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 849D53272E0AFD0A000A09B8 /* Info.plist */; };
 		849D53312E0AFD0A000A09B8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D532A2E0AFD0A000A09B8 /* SceneDelegate.swift */; };
 		849D53322E0AFD0A000A09B8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53252E0AFD0A000A09B8 /* AppDelegate.swift */; };
 		849D53372E0AFD51000A09B8 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53362E0AFD4B000A09B8 /* AppCoordinator.swift */; };
@@ -20,6 +19,10 @@
 		849D53412E0C79A2000A09B8 /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53402E0C7992000A09B8 /* APIService.swift */; };
 		849D53432E0C79BD000A09B8 /* EventService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53422E0C79B2000A09B8 /* EventService.swift */; };
 		849D53452E0C79CE000A09B8 /* CacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53442E0C79C9000A09B8 /* CacheService.swift */; };
+		849D534B2E0C7E6E000A09B8 /* Endpoints.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D534A2E0C7E69000A09B8 /* Endpoints.swift */; };
+		849D534E2E0C7EB4000A09B8 /* EventListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D534D2E0C7EAC000A09B8 /* EventListCoordinator.swift */; };
+		849D53502E0C825D000A09B8 /* EventListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D534F2E0C8257000A09B8 /* EventListView.swift */; };
+		849D53522E0C826A000A09B8 /* EventListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53512E0C8263000A09B8 /* EventListViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +59,10 @@
 		849D53402E0C7992000A09B8 /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		849D53422E0C79B2000A09B8 /* EventService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventService.swift; sourceTree = "<group>"; };
 		849D53442E0C79C9000A09B8 /* CacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheService.swift; sourceTree = "<group>"; };
+		849D534A2E0C7E69000A09B8 /* Endpoints.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Endpoints.swift; sourceTree = "<group>"; };
+		849D534D2E0C7EAC000A09B8 /* EventListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListCoordinator.swift; sourceTree = "<group>"; };
+		849D534F2E0C8257000A09B8 /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
+		849D53512E0C8263000A09B8 /* EventListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,6 +163,7 @@
 		849D533D2E0AFDD1000A09B8 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				849D534C2E0C7EA0000A09B8 /* EventListScreen */,
 			);
 			path = Screens;
 			sourceTree = "<group>";
@@ -163,9 +171,9 @@
 		849D533E2E0AFDE4000A09B8 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				849D53442E0C79C9000A09B8 /* CacheService.swift */,
+				849D53482E0C7E34000A09B8 /* CacheService */,
+				849D53462E0C7E1D000A09B8 /* Network */,
 				849D53422E0C79B2000A09B8 /* EventService.swift */,
-				849D53402E0C7992000A09B8 /* APIService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -175,6 +183,49 @@
 			children = (
 			);
 			path = Utilities;
+			sourceTree = "<group>";
+		};
+		849D53462E0C7E1D000A09B8 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				849D534A2E0C7E69000A09B8 /* Endpoints.swift */,
+				849D53472E0C7E26000A09B8 /* Model */,
+				849D53402E0C7992000A09B8 /* APIService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		849D53472E0C7E26000A09B8 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		849D53482E0C7E34000A09B8 /* CacheService */ = {
+			isa = PBXGroup;
+			children = (
+				849D53492E0C7E5E000A09B8 /* Model */,
+				849D53442E0C79C9000A09B8 /* CacheService.swift */,
+			);
+			path = CacheService;
+			sourceTree = "<group>";
+		};
+		849D53492E0C7E5E000A09B8 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		849D534C2E0C7EA0000A09B8 /* EventListScreen */ = {
+			isa = PBXGroup;
+			children = (
+				849D53512E0C8263000A09B8 /* EventListViewModel.swift */,
+				849D534F2E0C8257000A09B8 /* EventListView.swift */,
+				849D534D2E0C7EAC000A09B8 /* EventListCoordinator.swift */,
+			);
+			path = EventListScreen;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -289,7 +340,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				849D532D2E0AFD0A000A09B8 /* Assets.xcassets in Resources */,
-				849D532F2E0AFD0A000A09B8 /* Info.plist in Resources */,
 				849D533C2E0AFDB3000A09B8 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -320,8 +370,12 @@
 				849D53412E0C79A2000A09B8 /* APIService.swift in Sources */,
 				849D53312E0AFD0A000A09B8 /* SceneDelegate.swift in Sources */,
 				849D53392E0AFD5F000A09B8 /* DIContainer.swift in Sources */,
+				849D53502E0C825D000A09B8 /* EventListView.swift in Sources */,
 				849D53452E0C79CE000A09B8 /* CacheService.swift in Sources */,
+				849D534B2E0C7E6E000A09B8 /* Endpoints.swift in Sources */,
 				849D53322E0AFD0A000A09B8 /* AppDelegate.swift in Sources */,
+				849D534E2E0C7EB4000A09B8 /* EventListCoordinator.swift in Sources */,
+				849D53522E0C826A000A09B8 /* EventListViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,7 +424,6 @@
 				INFOPLIST_FILE = EventTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -398,7 +451,6 @@
 				INFOPLIST_FILE = EventTracker/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (

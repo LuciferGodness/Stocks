@@ -11,6 +11,7 @@ final class AppCoordinator {
     private let window: UIWindow
     private let navigationController: UINavigationController
     private let container: DIContainer
+    private var childCoordinators = [Any]()
     
     init(window: UIWindow, container: DIContainer) {
         self.window = window
@@ -19,10 +20,15 @@ final class AppCoordinator {
     }
     
     func start() {
-        let viewModel = container.makeEventListViewModel()
-        let eventListVC = EventListViewController(viewModel: viewModel)
+        let eventListCoordinator = EventListCoordinator(
+            navigationController: navigationController,
+            container: container
+        )
         
-        navigationController.viewControllers = [eventListVC]
+        childCoordinators.append(eventListCoordinator)
+        
+        eventListCoordinator.start()
+        
         window.rootViewController = navigationController
         window.makeKeyAndVisible()
     }
