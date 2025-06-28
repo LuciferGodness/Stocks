@@ -8,7 +8,7 @@
 import Combine
 
 protocol EventListViewModelProtocol: ObservableObject {
-    
+    func loadEvents()
 }
 
 final class EventListViewModel: EventListViewModelProtocol {
@@ -19,5 +19,20 @@ final class EventListViewModel: EventListViewModelProtocol {
     
     init(eventService: EventServiceProtocol) {
         self.eventService = eventService
+    }
+    
+    func loadEvents() {
+        eventService.getEvents()
+            .sink(receiveCompletion: { [weak self] completion in
+                switch completion {
+                case .finished:
+                    break
+                case .failure(let failure):
+                    print(failure.localizedDescription)
+                }
+            }, receiveValue: { [weak self] events in
+                print(events)
+            })
+            .store(in: &cancellables)
     }
 }
