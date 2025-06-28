@@ -37,10 +37,10 @@ extension Endpoints {
         
         var queryItems = [URLQueryItem(name: "apikey", value: "GoffoHmK82bF2aDs1hXF39aXa2ItYVnE")]
         
-        switch self {
-        case .getAllEvents:
-            queryItems.append(URLQueryItem(name: "size", value: "1"))
-        }
+//        switch self {
+//        case .getAllEvents:
+//            queryItems.append(URLQueryItem(name: "size", value: nil))
+//        }
         
         components.queryItems = queryItems
         return components.url

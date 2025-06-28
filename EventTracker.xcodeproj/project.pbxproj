@@ -24,6 +24,7 @@
 		849D53502E0C825D000A09B8 /* EventListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D534F2E0C8257000A09B8 /* EventListView.swift */; };
 		849D53522E0C826A000A09B8 /* EventListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53512E0C8263000A09B8 /* EventListViewModel.swift */; };
 		849D53542E0EE278000A09B8 /* EventDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53532E0EE274000A09B8 /* EventDTO.swift */; };
+		849D53562E100732000A09B8 /* CachedEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53552E10072D000A09B8 /* CachedEvent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +66,7 @@
 		849D534F2E0C8257000A09B8 /* EventListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListView.swift; sourceTree = "<group>"; };
 		849D53512E0C8263000A09B8 /* EventListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventListViewModel.swift; sourceTree = "<group>"; };
 		849D53532E0EE274000A09B8 /* EventDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDTO.swift; sourceTree = "<group>"; };
+		849D53552E10072D000A09B8 /* CachedEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedEvent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -217,6 +219,7 @@
 		849D53492E0C7E5E000A09B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				849D53552E10072D000A09B8 /* CachedEvent.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -376,6 +379,7 @@
 				849D53502E0C825D000A09B8 /* EventListView.swift in Sources */,
 				849D53542E0EE278000A09B8 /* EventDTO.swift in Sources */,
 				849D53452E0C79CE000A09B8 /* CacheService.swift in Sources */,
+				849D53562E100732000A09B8 /* CachedEvent.swift in Sources */,
 				849D534B2E0C7E6E000A09B8 /* Endpoints.swift in Sources */,
 				849D53322E0AFD0A000A09B8 /* AppDelegate.swift in Sources */,
 				849D534E2E0C7EB4000A09B8 /* EventListCoordinator.swift in Sources */,
