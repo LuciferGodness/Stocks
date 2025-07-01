@@ -31,7 +31,9 @@ final class EventService: EventServiceProtocol {
                     response.embedded.events
                 }
                 .handleEvents(receiveOutput: { [weak self] events in
-                    self?.cacheService.save(events: events)
+                    Task {
+                        await self?.cacheService.save(events: events)
+                    }
                 })
                 .eraseToAnyPublisher()
         } else {

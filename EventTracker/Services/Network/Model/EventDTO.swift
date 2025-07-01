@@ -5,6 +5,8 @@
 //  Created by Admin on 6/27/25.
 //
 
+import Foundation
+
 struct EventResponseDTO: Codable {
     let embedded: EmbeddedEvents
 
@@ -20,14 +22,10 @@ struct EmbeddedEvents: Codable {
 struct EventDTO: Codable, Identifiable {
     let id: String
     let name: String
-    let url: String
     let images: [EventImage]
+    let imageDatas: [Data]?
 }
 
 struct EventImage: Codable {
-    let ratio: String
     let url: String
-    let width: Int
-    let height: Int
-    let fallback: Bool
 }

@@ -5,7 +5,7 @@
 //  Created by Admin on 6/24/25.
 //
 
-struct DIContainer {
+final class DIContainer {
     let apiService: APIServiceProtocol
     let cacheService: CacheServiceProtocol
     let eventService: EventServiceProtocol
