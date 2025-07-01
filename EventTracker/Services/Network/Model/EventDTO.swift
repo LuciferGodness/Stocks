@@ -16,7 +16,7 @@ struct EventResponseDTO: Codable {
 }
 
 struct EmbeddedEvents: Codable {
-    let events: [EventDTO]
+    let attractions: [EventDTO]
 }
 
 struct EventDTO: Codable, Identifiable {

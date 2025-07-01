@@ -18,7 +18,7 @@ extension Endpoints {
     var path: String {
         switch self {
         case .getAllEvents:
-            "events.json"
+            "attractions.json"
         }
     }
     

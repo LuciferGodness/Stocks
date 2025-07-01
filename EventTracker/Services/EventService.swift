@@ -28,7 +28,7 @@ final class EventService: EventServiceProtocol {
         if monitor.currentPath.status == .satisfied {
             return apiService.request(.getAllEvents)
                 .map { (response: EventResponseDTO) in
-                    response.embedded.events
+                    response.embedded.attractions
                 }
                 .handleEvents(receiveOutput: { [weak self] events in
                     Task {

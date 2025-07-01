@@ -7,13 +7,26 @@
 
 import SwiftUI
 
-struct EventListView<ViewModel: EventListViewModelProtocol>: View {
-    @ObservedObject var viewModel: ViewModel
+struct EventListView: View {
+    @ObservedObject var viewModel: EventListViewModel
     
     var body: some View {
-        /*@START_MENU_TOKEN@*//*@PLACEHOLDER=Hello, world!@*/Text("Hello, world!")/*@END_MENU_TOKEN@*/
-            .onAppear {
-                viewModel.loadEvents()
+        VStack {
+            if viewModel.state.isLoading {
+                ProgressView()
+            } else if let error = viewModel.state.error {
+                Text("Error: \(error)")
+            } else {
+                List(viewModel.state.events, id: \.id) { event in
+                    Text(event.name)
+                        .onTapGesture {
+                            viewModel.send(action: .select(event: event))
+                        }
+                }
             }
+        }
+        .onAppear {
+            viewModel.send(action: .appear)
+        }
     }
 }
