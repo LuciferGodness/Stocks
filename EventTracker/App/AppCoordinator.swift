@@ -30,6 +30,7 @@ final class AppCoordinator {
         eventListCoordinator.start()
         
         window.rootViewController = navigationController
+        window.overrideUserInterfaceStyle = .light
         window.makeKeyAndVisible()
     }
 }

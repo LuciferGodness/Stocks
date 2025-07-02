@@ -27,16 +27,16 @@ final class CacheService: CacheServiceProtocol {
             var imageDatas = [CachedEventImage]()
             
             await withTaskGroup(of: Data?.self) { group in
-                for image in dto.images {
+                if let url = dto.images.first?.url {
                     group.addTask {
-                        await self.downloadImages(url: image.url)
+                        await self.downloadImages(url: url)
                     }
-                }
-                
-                for await data in group {
-                    if let imageData = data {
-                        let imageModel = CachedEventImage(imageData: imageData, event: model)
-                        imageDatas.append(imageModel)
+                    
+                    for await data in group {
+                        if let imageData = data {
+                            let imageModel = CachedEventImage(imageData: imageData, event: model)
+                            imageDatas.append(imageModel)
+                        }
                     }
                 }
             }

@@ -11,17 +11,19 @@ struct EventListView: View {
     @ObservedObject var viewModel: EventListViewModel
     
     var body: some View {
-        VStack {
-            if viewModel.state.isLoading {
-                ProgressView()
-            } else if let error = viewModel.state.error {
-                Text("Error: \(error)")
-            } else {
-                List(viewModel.state.events, id: \.id) { event in
-                    EventCell(event: event)
-                        .onTapGesture {
-                            viewModel.send(action: .select(event: event))
-                        }
+        ScrollView {
+            LazyVStack() {
+                if viewModel.state.isLoading {
+                    ProgressView()
+                } else if let error = viewModel.state.error {
+                    Text("Error: \(error)")
+                } else {
+                    ForEach(viewModel.state.events, id: \.id) { event in
+                        EventCell(event: event)
+                            .onTapGesture {
+                                viewModel.send(action: .select(event: event))
+                            }
+                    }
                 }
             }
         }

@@ -11,7 +11,28 @@ struct EventCell: View {
     let event: EventDTO
     
     var body: some View {
-        VStack(spacing: 16) {
+        headerImage
+        
+        Text(event.name)
+            .font(.title)
+            .bold()
+            .multilineTextAlignment(.leading)
+        
+        HStack(spacing: 6) {
+            ForEach(classificationLabels, id: \.self) { label in
+                GenreLabel(text: label)
+            }
+        }
+        
+        Rectangle()
+            .fill(Color.gray.opacity(0.2))
+            .frame(height: 20)
+            .padding(.top, 6)
+        
+    }
+    
+    var headerImage: some View {
+        VStack() {
             TabView {
                 if let imageDatas = event.imageDatas, !imageDatas.isEmpty {
                     ForEach(imageDatas, id: \.self) { imageData in
@@ -19,61 +40,35 @@ struct EventCell: View {
                             Image(uiImage: uiImage)
                                 .resizable()
                                 .scaledToFill()
-                                .frame(height: 250)
-                                .clipped()
-                                .cornerRadius(12)
-                                .padding(.horizontal)
                         } else {
                             ProgressView()
                                 .frame(height: 250)
-                                .cornerRadius(12)
-                                .padding(.horizontal)
                         }
                     }
                 } else {
                     AsyncImage(url: URL(string: event.images.first?.url ?? "")) { phase in
-                            switch phase {
-                            case .empty:
-                                ProgressView()
-                                    .frame(height: 250)
-                                    .cornerRadius(12)
-                                    .padding(.horizontal)
-                            case .success(let image):
-                                image
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(height: 250)
-                                    .clipped()
-                                    .cornerRadius(12)
-                                    .padding(.horizontal)
-                            case .failure:
-                                Color.gray
-                                    .frame(height: 250)
-                                    .cornerRadius(12)
-                                    .padding(.horizontal)
-                            @unknown default:
-                                EmptyView()
-                            }
+                        switch phase {
+                        case .empty:
+                            ProgressView()
+                                .frame(height: 250)
+                        case .success(let image):
+                            image
+                                .resizable()
+                                .scaledToFill()
+                        case .failure:
+                            Color.gray
+                                .frame(height: 250)
+                        @unknown default:
+                            EmptyView()
                         }
                     }
                 }
             }
-            .frame(height: 260)
-            
-            Text(event.name)
-                .font(.title)
-                .bold()
-                .multilineTextAlignment(.leading)
-                .padding(.horizontal)
-            
-            HStack(spacing: 6) {
-                ForEach(classificationLabels, id: \.self) { label in
-                    GenreLabel(text: label)
-                }
-            }
-            .padding(.bottom, 20)
-            Spacer()
         }
+        .tabViewStyle(.page)
+        .frame(height: 250)
+        .clipped()
+    }
 }
 
 extension EventCell {

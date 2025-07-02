@@ -13,7 +13,11 @@ struct GenreLabel: View {
     var body: some View {
         Text(text)
             .font(.caption)
-            .background(Color.gray.opacity(0.8))
+            .bold()
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(Color.blue.opacity(0.8))
             .clipShape(Capsule())
     }
 }
