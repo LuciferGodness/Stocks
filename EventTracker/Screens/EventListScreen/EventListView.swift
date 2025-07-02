@@ -18,7 +18,7 @@ struct EventListView: View {
                 Text("Error: \(error)")
             } else {
                 List(viewModel.state.events, id: \.id) { event in
-                    Text(event.name)
+                    EventCell(event: event)
                         .onTapGesture {
                             viewModel.send(action: .select(event: event))
                         }

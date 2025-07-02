@@ -23,9 +23,22 @@ struct EventDTO: Codable, Identifiable {
     let id: String
     let name: String
     let images: [EventImage]
+    let classifications: [EventClassifications]
+    
     let imageDatas: [Data]?
 }
 
 struct EventImage: Codable {
     let url: String
+}
+
+struct EventClassifications: Codable {
+    let segment: Segment
+    let genre: Segment
+    let subGenre: Segment
+    
+    struct Segment: Codable {
+        let id: String
+        let name: String
+    }
 }

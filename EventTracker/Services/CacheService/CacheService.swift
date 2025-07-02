@@ -23,7 +23,7 @@ final class CacheService: CacheServiceProtocol {
         context = container.mainContext
         
         for dto in events {
-            let model = CachedEvent(id: dto.id, name: dto.name)
+            let model = CachedEvent(id: dto.id, name: dto.name, classifications: dto.classifications)
             var imageDatas = [CachedEventImage]()
             
             await withTaskGroup(of: Data?.self) { group in
@@ -57,7 +57,7 @@ final class CacheService: CacheServiceProtocol {
             let results = try context.fetch(FetchDescriptor<CachedEvent>())
             
             return results.map { event in
-                EventDTO(id: event.id, name: event.name, images: [], imageDatas: event.images.map { $0.imageData })
+                EventDTO(id: event.id, name: event.name, images: [], classifications: event.classifications, imageDatas: event.images.map { $0.imageData })
             }
         } catch {
             print("\(error)")

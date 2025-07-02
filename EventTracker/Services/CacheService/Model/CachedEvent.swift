@@ -13,11 +13,13 @@ final class CachedEvent {
     var name: String
     @Attribute(.externalStorage)
     var images: [CachedEventImage]
+    var classifications: [EventClassifications]
     
-    init(id: String, name: String, images: [CachedEventImage] = []) {
+    init(id: String, name: String, images: [CachedEventImage] = [], classifications: [EventClassifications] = []) {
         self.id = id
         self.name = name
         self.images = images
+        self.classifications = classifications
     }
 }
 
