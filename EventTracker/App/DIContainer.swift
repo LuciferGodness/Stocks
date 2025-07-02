@@ -6,9 +6,9 @@
 //
 
 final class DIContainer {
-    let apiService: APIServiceProtocol
-    let cacheService: CacheServiceProtocol
-    let eventService: EventServiceProtocol
+    private let apiService: APIServiceProtocol
+    private let cacheService: CacheServiceProtocol
+    private let eventService: EventServiceProtocol
     
     init() {
         self.apiService = APIService()
@@ -18,5 +18,9 @@ final class DIContainer {
     
     func makeEventListViewModel() -> EventListViewModel {
         EventListViewModel(eventService: eventService)
+    }
+    
+    func makeEventDetailsViewModel(event: EventDTO) -> EventDetailsViewModel {
+        EventDetailsViewModel(eventService: eventService, event: event)
     }
 }

@@ -21,10 +21,16 @@ struct EventListViewState {
 
 
 final class EventListViewModel: ObservableObject {
+    enum NavigationEvent {
+        case select(event: EventDTO)
+    }
+    
     @Published private(set)var state = EventListViewState()
     
     private let eventService: EventServiceProtocol
     private var cancellables = Set<AnyCancellable>()
+    
+    var navigation = PassthroughSubject<NavigationEvent, Never>()
     
     init(eventService: EventServiceProtocol) {
         self.eventService = eventService
@@ -35,7 +41,8 @@ final class EventListViewModel: ObservableObject {
         case .appear:
             loadEvents()
         case .select(let event):
-            print("selected: \(event.name)")
+            print("Selected event: \(event.name)")
+            navigation.send(.select(event: event))
         case .filter:
             print("filter")
         }

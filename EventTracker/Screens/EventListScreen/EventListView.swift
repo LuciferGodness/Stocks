@@ -30,5 +30,6 @@ struct EventListView: View {
         .onAppear {
             viewModel.send(action: .appear)
         }
+        .navigationTitle("Events")
     }
 }

@@ -3,6 +3,9 @@
   "strings" : {
     "Error: %@" : {
 
+    },
+    "Events" : {
+
     }
   },
   "version" : "1.0"
