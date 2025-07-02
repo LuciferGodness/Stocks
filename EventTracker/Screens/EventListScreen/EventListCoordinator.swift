@@ -13,6 +13,7 @@ final class EventListCoordinator {
     private let navigationController: UINavigationController
     private let container: DIContainer
     private var cancellables = Set<AnyCancellable>()
+    private var childCoordinators = [AnyObject]()
     
     init(navigationController: UINavigationController, container: DIContainer) {
         self.navigationController = navigationController
@@ -45,6 +46,18 @@ final class EventListCoordinator {
         let newCoordinator = EventDetailsCoordinator(navigationController: navigationController,
                                 container: container,
                                 event: event)
+        
+        childCoordinators.append(newCoordinator)
+        
+//        newCoordinator.didFinish
+//            .sink {
+//                removeChildCoordinator()
+//            }.store(in: cancellables)
+        
         newCoordinator.start()
+    }
+    
+    private func removeChildCoordinator() {
+        childCoordinators.removeLast()
     }
 }

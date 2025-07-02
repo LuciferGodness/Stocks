@@ -6,11 +6,13 @@
 //
 import SwiftUI
 import UIKit
+import Combine
 
 final class EventDetailsCoordinator {
     private let navigationController: UINavigationController
     private let container: DIContainer
     private let event: EventDTO
+    private let didFinish = PassthroughSubject<Void, Never>() // TODO: под вопросом, тут скорее будет тип навигации из модели, а уже потом мы будет отправлять запрос прошлому координатору на удаление
     
     init(navigationController: UINavigationController, container: DIContainer, event: EventDTO) {
         self.navigationController = navigationController
@@ -24,5 +26,9 @@ final class EventDetailsCoordinator {
         let hostingController = UIHostingController(rootView: view)
         
         navigationController.pushViewController(hostingController, animated: true)
+    }
+    
+    func finish() {
+        didFinish.send()
     }
 }
