@@ -8,6 +8,7 @@ import Foundation
 
 enum Endpoints {
     case getAllEvents
+    case getEventByID(id: String)
 }
 
 extension Endpoints {
@@ -19,6 +20,8 @@ extension Endpoints {
         switch self {
         case .getAllEvents:
             "attractions.json"
+        case .getEventByID(let id):
+            "attractions/\(id).json"
         }
     }
     

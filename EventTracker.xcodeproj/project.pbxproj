@@ -12,6 +12,7 @@
 		8473FE132E1590EB008C1400 /* EventDetailsCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473FE122E1590DF008C1400 /* EventDetailsCoordinator.swift */; };
 		8473FE152E1590F7008C1400 /* EventDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473FE142E1590EE008C1400 /* EventDetailsViewModel.swift */; };
 		8473FE172E159102008C1400 /* EventDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473FE162E1590FA008C1400 /* EventDetailsView.swift */; };
+		8473FE192E16AF94008C1400 /* EventDetailsDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473FE182E16AF8F008C1400 /* EventDetailsDTO.swift */; };
 		849D531B2E0AFCD8000A09B8 /* EventTrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53182E0AFCD8000A09B8 /* EventTrackerUITests.swift */; };
 		849D531C2E0AFCD8000A09B8 /* EventTrackerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53192E0AFCD8000A09B8 /* EventTrackerUITestsLaunchTests.swift */; };
 		849D531F2E0AFCDC000A09B8 /* EventTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D531D2E0AFCDC000A09B8 /* EventTrackerTests.swift */; };
@@ -55,6 +56,7 @@
 		8473FE122E1590DF008C1400 /* EventDetailsCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsCoordinator.swift; sourceTree = "<group>"; };
 		8473FE142E1590EE008C1400 /* EventDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsViewModel.swift; sourceTree = "<group>"; };
 		8473FE162E1590FA008C1400 /* EventDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsView.swift; sourceTree = "<group>"; };
+		8473FE182E16AF8F008C1400 /* EventDetailsDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventDetailsDTO.swift; sourceTree = "<group>"; };
 		849D52832E0AF8A3000A09B8 /* EventTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EventTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		849D52992E0AF8A5000A09B8 /* EventTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EventTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		849D52A32E0AF8A5000A09B8 /* EventTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EventTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -240,6 +242,7 @@
 		849D53472E0C7E26000A09B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				8473FE182E16AF8F008C1400 /* EventDetailsDTO.swift */,
 				849D53532E0EE274000A09B8 /* EventDTO.swift */,
 			);
 			path = Model;
@@ -413,6 +416,7 @@
 				8473FE152E1590F7008C1400 /* EventDetailsViewModel.swift in Sources */,
 				849D53432E0C79BD000A09B8 /* EventService.swift in Sources */,
 				849D53372E0AFD51000A09B8 /* AppCoordinator.swift in Sources */,
+				8473FE192E16AF94008C1400 /* EventDetailsDTO.swift in Sources */,
 				8473FE0B2E1553FD008C1400 /* EventCell.swift in Sources */,
 				8473FE172E159102008C1400 /* EventDetailsView.swift in Sources */,
 				849D53412E0C79A2000A09B8 /* APIService.swift in Sources */,

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EventCell: View {
     let event: EventDTO
+    let onSelectImage: (Image) -> Void
     
     var body: some View {
         headerImage
@@ -40,6 +41,9 @@ struct EventCell: View {
                             Image(uiImage: uiImage)
                                 .resizable()
                                 .scaledToFill()
+                                .onTapGesture {
+                                    onSelectImage(Image(uiImage: uiImage))
+                                }
                         } else {
                             ProgressView()
                                 .frame(height: 250)
@@ -55,6 +59,9 @@ struct EventCell: View {
                             image
                                 .resizable()
                                 .scaledToFill()
+                                .onTapGesture {
+                                    onSelectImage(image)
+                                }
                         case .failure:
                             Color.gray
                                 .frame(height: 250)

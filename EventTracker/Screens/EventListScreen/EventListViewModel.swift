@@ -6,10 +6,11 @@
 //
 
 import Combine
+import SwiftUICore
 
 enum EventListViewAction {
     case appear
-    case select(event: EventDTO)
+    case select(image: Image?, id: String)
     case filter
 }
 
@@ -19,10 +20,9 @@ struct EventListViewState {
     var isLoading: Bool = false
 }
 
-
 final class EventListViewModel: ObservableObject {
     enum NavigationEvent {
-        case select(event: EventDTO)
+        case select(image: Image?, id: String)
     }
     
     @Published private(set)var state = EventListViewState()
@@ -36,13 +36,12 @@ final class EventListViewModel: ObservableObject {
         self.eventService = eventService
     }
     
-    func send(action: EventListViewAction) {
+    func send(_ action: EventListViewAction) {
         switch action {
         case .appear:
             loadEvents()
-        case .select(let event):
-            print("Selected event: \(event.name)")
-            navigation.send(.select(event: event))
+        case .select(let image, let id):
+            navigation.send(.select(image: image, id: id))
         case .filter:
             print("filter")
         }

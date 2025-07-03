@@ -19,16 +19,15 @@ struct EventListView: View {
                     Text("Error: \(error)")
                 } else {
                     ForEach(viewModel.state.events, id: \.id) { event in
-                        EventCell(event: event)
-                            .onTapGesture {
-                                viewModel.send(action: .select(event: event))
-                            }
+                        EventCell(event: event) { image in
+                            viewModel.send(.select(image: image, id: event.id))
+                        }
                     }
                 }
             }
         }
         .onAppear {
-            viewModel.send(action: .appear)
+            viewModel.send(.appear)
         }
         .navigationTitle("Events")
     }

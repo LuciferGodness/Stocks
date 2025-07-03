@@ -31,21 +31,20 @@ final class EventListCoordinator {
     }
     
     private func observeNavigationEvents(viewModel: EventListViewModel) {
-        print("Here")
         viewModel.navigation
             .sink { [weak self] navigation in
                 switch navigation {
-                case .select(let event):
-                    print("Selected event coordinator: \(event.name)")
-                    self?.openEventDetails(event: event)
+                case .select(let image, let id):
+                    self?.openEventDetails(image: image, id: id)
                 }
             }.store(in: &cancellables)
     }
     
-    private func openEventDetails(event: EventDTO) {
+    private func openEventDetails(image: Image?, id: String) {
         let newCoordinator = EventDetailsCoordinator(navigationController: navigationController,
-                                container: container,
-                                event: event)
+                                                     container: container,
+                                                     image: image,
+                                                     id: id)
         
         childCoordinators.append(newCoordinator)
         

@@ -33,6 +33,15 @@ final class APIService: APIServiceProtocol {
             }
             .decode(type: T.self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
+            .handleEvents(receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    if let decosingError = error as? DecodingError {
+                        print("Decoding error: \(error.localizedDescription)")
+                    } else {
+                        print("Other error: \(error.localizedDescription)")
+                    }
+                }
+            })
             .eraseToAnyPublisher()
     }
 }

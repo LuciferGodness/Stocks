@@ -5,6 +5,8 @@
 //  Created by Admin on 6/24/25.
 //
 
+import SwiftUICore
+
 final class DIContainer {
     private let apiService: APIServiceProtocol
     private let cacheService: CacheServiceProtocol
@@ -20,7 +22,7 @@ final class DIContainer {
         EventListViewModel(eventService: eventService)
     }
     
-    func makeEventDetailsViewModel(event: EventDTO) -> EventDetailsViewModel {
-        EventDetailsViewModel(eventService: eventService, event: event)
+    func makeEventDetailsViewModel(image: Image?, id: String) -> EventDetailsViewModel {
+        EventDetailsViewModel(eventService: eventService, image: image, id: id)
     }
 }

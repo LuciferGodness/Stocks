@@ -10,6 +10,7 @@ import Network
 
 protocol EventServiceProtocol {
     func getEvents() -> AnyPublisher<[EventDTO], Error>
+    func getEventDetails(id: String) -> AnyPublisher<EventDetailsDTO, Error>
 }
 
 final class EventService: EventServiceProtocol {
@@ -38,6 +39,17 @@ final class EventService: EventServiceProtocol {
                 .eraseToAnyPublisher()
         } else {
            return Just(cacheService.loadEvents())
+                .setFailureType(to: Error.self)
+                .eraseToAnyPublisher()
+        }
+    }
+    
+    func getEventDetails(id: String) -> AnyPublisher<EventDetailsDTO, Error> {
+        if monitor.currentPath.status == .satisfied {
+            return apiService.request(.getEventByID(id: id))
+                .eraseToAnyPublisher()
+        } else {
+            return Just(EventDetailsDTO(name: "hi", description: "nsjf", additionalInfo: "bjshfj"))
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         }
