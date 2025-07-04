@@ -7,6 +7,7 @@
 
 import Combine
 import SwiftUICore
+import CoreLocation
 
 enum EventListViewAction {
     case appear
@@ -28,12 +29,14 @@ final class EventListViewModel: ObservableObject {
     @Published private(set)var state = EventListViewState()
     
     private let eventService: EventServiceProtocol
+    private let locationManager: LocationManager
     private var cancellables = Set<AnyCancellable>()
     
     var navigation = PassthroughSubject<NavigationEvent, Never>()
     
-    init(eventService: EventServiceProtocol) {
+    init(eventService: EventServiceProtocol, locationManager: LocationManager) {
         self.eventService = eventService
+        self.locationManager = locationManager
     }
     
     func send(_ action: EventListViewAction) {
@@ -49,7 +52,13 @@ final class EventListViewModel: ObservableObject {
     
     private func loadEvents() {
         state.isLoading = true
-        eventService.getEvents()
+        var location: CLLocationCoordinate2D
+        if let locationLive = locationManager.location {
+            location = locationLive
+        } else {
+            location = CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060)
+        }
+        eventService.getEvents(lat: location.latitude, lon: location.latitude)
             .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
                 case .finished:

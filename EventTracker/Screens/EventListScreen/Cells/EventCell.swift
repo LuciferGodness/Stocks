@@ -14,16 +14,16 @@ struct EventCell: View {
     var body: some View {
         headerImage
         
-        Text(event.name)
+        Text(event.name.text ?? "No name")
             .font(.title)
             .bold()
             .multilineTextAlignment(.leading)
         
-        HStack(spacing: 6) {
-            ForEach(classificationLabels, id: \.self) { label in
-                GenreLabel(text: label)
-            }
-        }
+//        HStack(spacing: 6) {
+//            ForEach(classificationLabels, id: \.self) { label in
+//                GenreLabel(text: label)
+//            }
+//        }
         
         Rectangle()
             .fill(Color.gray.opacity(0.2))
@@ -50,7 +50,7 @@ struct EventCell: View {
                         }
                     }
                 } else {
-                    AsyncImage(url: URL(string: event.images.first?.url ?? "")) { phase in
+                    AsyncImage(url: URL(string: event.images?.url ?? "")) { phase in
                         switch phase {
                         case .empty:
                             ProgressView()
@@ -79,14 +79,14 @@ struct EventCell: View {
 }
 
 extension EventCell {
-    private var classificationLabels: [String] {
-        event.classifications.flatMap { classification in
-            [
-                classification.segment.name,
-                classification.genre.name,
-                classification.subGenre.name
-            ]
-        }
-        .compactMap { $0 }
-    }
+//    private var classificationLabels: [String] {
+//        event.classifications.flatMap { classification in
+//            [
+//                classification.segment.name,
+//                classification.genre.name,
+//                classification.subGenre.name
+//            ]
+//        }
+//        .compactMap { $0 }
+//    }
 }

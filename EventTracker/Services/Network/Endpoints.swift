@@ -7,21 +7,21 @@
 import Foundation
 
 enum Endpoints {
-    case getAllEvents
+    case getAllEvents(lat: Double, lon: Double)
     case getEventByID(id: String)
 }
 
 extension Endpoints {
     var basePath: String {
-        "https://app.ticketmaster.com/discovery/v2/"
+        "https://api.predicthq.com/v1/"
     }
     
     var path: String {
         switch self {
-        case .getAllEvents:
-            "attractions.json"
+        case .getAllEvents(_, _):
+            "events/"
         case .getEventByID(let id):
-            "attractions/\(id).json"
+            "events/\(id)/"
         }
     }
     
@@ -30,7 +30,10 @@ extension Endpoints {
     }
     
     var headers: [String: String] {
-        return ["Content-Type": "application/json"]
+        return [
+            "Content-Type": "application/json",
+            "Authorization": "Bearer nWn6uyilIoRiBMUict4wCRYTYLR_9wOPeXRozcIf"
+        ]
     }
     
     var url: URL? {
@@ -38,14 +41,16 @@ extension Endpoints {
             return nil
         }
         
-        var queryItems = [URLQueryItem(name: "apikey", value: "GoffoHmK82bF2aDs1hXF39aXa2ItYVnE")]
+        switch self {
+        case .getAllEvents(let lat, let lon):
+            components.queryItems = [
+                URLQueryItem(name: "location.latitude", value: "\(lat)"),
+                URLQueryItem(name: "location.longitude", value: "\(lon)")
+            ]
+        case .getEventByID:
+            break
+        }
         
-//        switch self {
-//        case .getAllEvents:
-//            queryItems.append(URLQueryItem(name: "size", value: nil))
-//        }
-        
-        components.queryItems = queryItems
         return components.url
     }
 }

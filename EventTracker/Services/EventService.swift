@@ -9,7 +9,7 @@ import Combine
 import Network
 
 protocol EventServiceProtocol {
-    func getEvents() -> AnyPublisher<[EventDTO], Error>
+    func getEvents(lat: Double, lon: Double) -> AnyPublisher<[EventDTO], Error>
     func getEventDetails(id: String) -> AnyPublisher<EventDetailsDTO, Error>
 }
 
@@ -25,9 +25,9 @@ final class EventService: EventServiceProtocol {
         self.monitor.start(queue: DispatchQueue.global(qos: .background))
     }
     
-    func getEvents() -> AnyPublisher<[EventDTO], Error> {
+    func getEvents(lat: Double, lon: Double) -> AnyPublisher<[EventDTO], Error> {
         if monitor.currentPath.status == .satisfied {
-            return apiService.request(.getAllEvents)
+            return apiService.request(.getAllEvents(lat: lat, lon: lon))
                 .map { (response: EventResponseDTO) in
                     response.embedded.attractions
                 }
