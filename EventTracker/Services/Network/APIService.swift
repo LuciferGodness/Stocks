@@ -23,6 +23,13 @@ final class APIService: APIServiceProtocol {
         endpoint.headers.forEach { request.setValue($1, forHTTPHeaderField: $0) }
         
         return URLSession.shared.dataTaskPublisher(for: request)
+            .handleEvents(receiveOutput: { data, response in
+                NetworkLogger.shared.logResponse(data: data, response: response, error: nil)
+            }, receiveCompletion: { completion in
+                if case .failure(let error) = completion {
+                    NetworkLogger.shared.logResponse(data: nil, response: nil, error: error)
+                }
+            })
             .tryMap { data, response in
                 guard let httpResponse = response as? HTTPURLResponse,
                       200..<300 ~= httpResponse.statusCode else {
@@ -33,15 +40,6 @@ final class APIService: APIServiceProtocol {
             }
             .decode(type: T.self, decoder: JSONDecoder())
             .receive(on: DispatchQueue.main)
-            .handleEvents(receiveCompletion: { completion in
-                if case .failure(let error) = completion {
-                    if let decodingError = error as? DecodingError {
-                        print("Decoding error: \(error.localizedDescription)")
-                    } else {
-                        print("Other error: \(error.localizedDescription)")
-                    }
-                }
-            })
             .eraseToAnyPublisher()
     }
 }

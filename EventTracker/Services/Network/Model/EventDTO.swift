@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-struct EventDTO: Codable, Identifiable {
+struct EventDTO: Codable {
     let eventName: String
-    let eventDate: Date
+    let eventDate: String
     let eventCategory: String
     let eventLocation: String
     let eventCity: String
@@ -20,7 +20,6 @@ struct EventDTO: Codable, Identifiable {
     let eventAttendees: Int
     let eventTicketPrice: String
     let eventTicketId: UUID
-    var id: UUID { eventTicketId }
 
     enum CodingKeys: String, CodingKey {
         case eventName = "event_name"
@@ -40,17 +39,7 @@ struct EventDTO: Codable, Identifiable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         eventName = try container.decode(String.self, forKey: .eventName)
-
-        let dateString = try container.decode(String.self, forKey: .eventDate)
-        let formatter = DateFormatter()
-        formatter.dateFormat = "M/d/yyyy"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-
-        guard let parsedDate = formatter.date(from: dateString) else {
-            throw DecodingError.dataCorruptedError(forKey: .eventDate, in: container, debugDescription: "Invalid date format")
-        }
-
-        eventDate = parsedDate
+        eventDate = try container.decode(String.self, forKey: .eventDate)
         eventCategory = try container.decode(String.self, forKey: .eventCategory)
         eventLocation = try container.decode(String.self, forKey: .eventLocation)
         eventCity = try container.decode(String.self, forKey: .eventCity)
@@ -78,9 +67,9 @@ extension EventDTO {
         self.eventCategory = event.eventCategory
         self.eventLocation = event.eventLocation
         self.eventCity = event.eventCity
-        self.eventCountry = event.eventCity
-        self.eventImage = event.eventCity
-        self.eventDescription = event.eventCity
+        self.eventCountry = event.eventCountry
+        self.eventImage = event.eventImage
+        self.eventDescription = event.eventDescription
         self.eventAttendees = event.eventAttendees
         self.eventTicketPrice = event.eventTicketPrice
         self.eventTicketId = event.id

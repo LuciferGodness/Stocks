@@ -46,7 +46,7 @@ final class EventService: EventServiceProtocol {
             return apiService.request(.getEventByID(id: id))
                 .eraseToAnyPublisher()
         } else {
-            return Just(EventDetailsDTO(name: "hi", description: "nsjf", additionalInfo: "bjshfj"))
+            return Just(EventDetailsDTO(eventDetails: .init(eventName: "cd", eventDescription: "dsds", eventDate: "dsds", eventLocation: "dsd", organizerName: "dsd", organizerEmail: "dfed", ticketPrice: 1233, eventCategory: "dsd", eventCapacity: 121313)))
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         }

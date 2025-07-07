@@ -11,47 +11,60 @@ struct EventCell: View {
     let event: EventDTO
     
     var body: some View {
-        headerImage
-        
-        Text(event.eventName)
-            .font(.title)
-            .bold()
-            .multilineTextAlignment(.leading)
-        
-//        HStack(spacing: 6) {
-//            ForEach(classificationLabels, id: \.self) { label in
-//                GenreLabel(text: label)
-//            }
-//        }
-        
-        Rectangle()
-            .fill(Color.gray.opacity(0.2))
-            .frame(height: 20)
-            .padding(.top, 6)
+        VStack(alignment: .leading) {
+            HStack() {
+                headerImage
+                
+                VStack(alignment: .leading) {
+                    Text(event.eventName)
+                        .font(.system(size: 22))
+                        .bold()
+                        .multilineTextAlignment(.leading)
+                    
+                    HStack {
+                        Text(event.eventCity)
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 14))
+                            .multilineTextAlignment(.leading)
+                        Text(event.eventDate)
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 14))
+                            .multilineTextAlignment(.leading)
+                        Text(event.eventCategory)
+                            .foregroundStyle(.gray)
+                            .font(.system(size: 14))
+                            .multilineTextAlignment(.leading)
+                    }
+                    
+                    Text(event.eventAttendees.description)
+                        .font(.system(size: 22))
+                        .bold()
+                        .multilineTextAlignment(.leading)
+                }
+            }
+            
+            Rectangle()
+                .fill(Color.gray.opacity(0.2))
+                .frame(height: 20)
+                .padding(.top, 6)
+        }
         
     }
     
     var headerImage: some View {
         VStack() {
             TabView {
-                Image(uiImage: event.image ?? UIImage())
+                if let image = event.image {
+                    Image(uiImage: image)
+                } else {
+                    let base64String = event.eventImage.components(separatedBy: ",").last
+                    let imageData = Data(base64Encoded: base64String ?? "")
+                    Image(uiImage: UIImage(data: imageData ?? Data()) ?? UIImage())
+                }
             }
         }
         .tabViewStyle(.page)
-        .frame(height: 250)
+        .frame(width: 20, height: 20)
         .clipped()
     }
-}
-
-extension EventCell {
-//    private var classificationLabels: [String] {
-//        event.classifications.flatMap { classification in
-//            [
-//                classification.segment.name,
-//                classification.genre.name,
-//                classification.subGenre.name
-//            ]
-//        }
-//        .compactMap { $0 }
-//    }
 }

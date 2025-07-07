@@ -21,7 +21,7 @@ extension Endpoints {
         case .getAllEvents:
             "events.json"
         case .getEventByID(let id):
-            "events/\(id)/"
+            "event/\(id).json/"
         }
     }
     
@@ -39,12 +39,13 @@ extension Endpoints {
         guard var components = URLComponents(string: basePath + path) else {
             return nil
         }
+        components.queryItems = [
+            URLQueryItem(name: "key", value: "8686d0d0")
+        ]
         
         switch self {
         case .getAllEvents:
-            components.queryItems = [
-                URLQueryItem(name: "key", value: "8686d0d0")
-            ]
+            break
         case .getEventByID:
             break
         }

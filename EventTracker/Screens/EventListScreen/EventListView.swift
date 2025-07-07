@@ -18,10 +18,10 @@ struct EventListView: View {
                 } else if let error = viewModel.state.error {
                     Text("Error: \(error)")
                 } else {
-                    ForEach(viewModel.state.events, id: \.id) { event in
+                    ForEach(viewModel.state.events, id: \.eventTicketId) { event in
                         EventCell(event: event)
                             .onTapGesture {
-                                viewModel.send(.select(id: event.id))
+                                viewModel.send(.select(id: event.eventTicketId.uuidString))
                             }
                     }
                 }

@@ -18,15 +18,9 @@ struct EventDetailsView: View {
                 Text(error)
             } else {
                 VStack(spacing: 16) {
-                    if let image = viewModel.image {
-                        image
-                            .resizable()
-                            .scaledToFill()
-                            .frame(height: 250)
-                    }
-                    Text(viewModel.state.detail?.name ?? "")
-                    Text(viewModel.state.detail?.description ?? "")
-                    Text(viewModel.state.detail?.additionalInfo ?? "")
+                    Text(viewModel.state.detail?.eventName ?? "")
+                    Text(viewModel.state.detail?.eventDescription ?? "")
+                    Text(viewModel.state.detail?.eventLocation ?? "")
                 }
             }
         }

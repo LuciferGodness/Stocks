@@ -11,13 +11,12 @@ import UIKit
 final class CachedEvent {
     @Attribute(.unique) var id: UUID
     var eventName: String
-    var eventDate: Date
+    var eventDate: String
     var eventCategory: String
     var eventLocation: String
     var eventCity: String
     var eventCountry: String
-    @Attribute(.externalStorage)
-    var eventImage: Data
+    var eventImage: String
     var eventDescription: String
     var eventAttendees: Int
     var eventTicketPrice: String
