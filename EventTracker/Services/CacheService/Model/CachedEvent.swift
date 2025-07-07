@@ -9,27 +9,32 @@ import UIKit
 
 @Model
 final class CachedEvent {
-    var id: String
-    var name: String
+    @Attribute(.unique) var id: UUID
+    var eventName: String
+    var eventDate: Date
+    var eventCategory: String
+    var eventLocation: String
+    var eventCity: String
+    var eventCountry: String
     @Attribute(.externalStorage)
-    var images: [CachedEventImage]
-    var classifications: [EventClassifications]
+    var eventImage: Data
+    var eventDescription: String
+    var eventAttendees: Int
+    var eventTicketPrice: String
     
-    init(id: String, name: String, images: [CachedEventImage] = [], classifications: [EventClassifications] = []) {
-        self.id = id
-        self.name = name
-        self.images = images
-        self.classifications = classifications
+    init(event: EventDTO) {
+        self.id = event.eventTicketId
+        self.eventName = event.eventName
+        self.eventDate = event.eventDate
+        self.eventCategory = event.eventCategory
+        self.eventLocation = event.eventLocation
+        self.eventCity = event.eventCity
+        self.eventCountry = event.eventCountry
+        self.eventImage = event.eventImage
+        self.eventDescription = event.eventDescription
+        self.eventAttendees = event.eventAttendees
+        self.eventTicketPrice = event.eventTicketPrice
     }
 }
 
-@Model
-final class CachedEventImage {
-    var imageData: Data
-    var event: CachedEvent?
 
-    init(imageData: Data, event: CachedEvent? = nil) {
-        self.imageData = imageData
-        self.event = event
-    }
-}

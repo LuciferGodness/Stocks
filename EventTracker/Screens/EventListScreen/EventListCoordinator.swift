@@ -34,16 +34,15 @@ final class EventListCoordinator {
         viewModel.navigation
             .sink { [weak self] navigation in
                 switch navigation {
-                case .select(let image, let id):
-                    self?.openEventDetails(image: image, id: id)
+                case .select(let id):
+                    self?.openEventDetails(id: id)
                 }
             }.store(in: &cancellables)
     }
     
-    private func openEventDetails(image: Image?, id: String) {
+    private func openEventDetails(id: String) {
         let newCoordinator = EventDetailsCoordinator(navigationController: navigationController,
                                                      container: container,
-                                                     image: image,
                                                      id: id)
         
         childCoordinators.append(newCoordinator)

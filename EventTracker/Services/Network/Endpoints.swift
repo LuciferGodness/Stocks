@@ -7,19 +7,19 @@
 import Foundation
 
 enum Endpoints {
-    case getAllEvents(lat: Double, lon: Double)
+    case getAllEvents
     case getEventByID(id: String)
 }
 
 extension Endpoints {
     var basePath: String {
-        "https://api.predicthq.com/v1/"
+        "https://my.api.mockaroo.com/"
     }
     
     var path: String {
         switch self {
-        case .getAllEvents(_, _):
-            "events/"
+        case .getAllEvents:
+            "events.json"
         case .getEventByID(let id):
             "events/\(id)/"
         }
@@ -31,8 +31,7 @@ extension Endpoints {
     
     var headers: [String: String] {
         return [
-            "Content-Type": "application/json",
-            "Authorization": "Bearer nWn6uyilIoRiBMUict4wCRYTYLR_9wOPeXRozcIf"
+            "Content-Type": "application/json"
         ]
     }
     
@@ -42,10 +41,9 @@ extension Endpoints {
         }
         
         switch self {
-        case .getAllEvents(let lat, let lon):
+        case .getAllEvents:
             components.queryItems = [
-                URLQueryItem(name: "location.latitude", value: "\(lat)"),
-                URLQueryItem(name: "location.longitude", value: "\(lon)")
+                URLQueryItem(name: "key", value: "8686d0d0")
             ]
         case .getEventByID:
             break

@@ -9,12 +9,11 @@ import SwiftUI
 
 struct EventCell: View {
     let event: EventDTO
-    let onSelectImage: (Image) -> Void
     
     var body: some View {
         headerImage
         
-        Text(event.name.text ?? "No name")
+        Text(event.eventName)
             .font(.title)
             .bold()
             .multilineTextAlignment(.leading)
@@ -35,41 +34,7 @@ struct EventCell: View {
     var headerImage: some View {
         VStack() {
             TabView {
-                if let imageDatas = event.imageDatas, !imageDatas.isEmpty {
-                    ForEach(imageDatas, id: \.self) { imageData in
-                        if let uiImage = UIImage(data: imageData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFill()
-                                .onTapGesture {
-                                    onSelectImage(Image(uiImage: uiImage))
-                                }
-                        } else {
-                            ProgressView()
-                                .frame(height: 250)
-                        }
-                    }
-                } else {
-                    AsyncImage(url: URL(string: event.images?.url ?? "")) { phase in
-                        switch phase {
-                        case .empty:
-                            ProgressView()
-                                .frame(height: 250)
-                        case .success(let image):
-                            image
-                                .resizable()
-                                .scaledToFill()
-                                .onTapGesture {
-                                    onSelectImage(image)
-                                }
-                        case .failure:
-                            Color.gray
-                                .frame(height: 250)
-                        @unknown default:
-                            EmptyView()
-                        }
-                    }
-                }
+                Image(uiImage: event.image ?? UIImage())
             }
         }
         .tabViewStyle(.page)

@@ -24,7 +24,7 @@ final class DIContainer {
         EventListViewModel(eventService: eventService, locationManager: locationManager)
     }
     
-    func makeEventDetailsViewModel(image: Image?, id: String) -> EventDetailsViewModel {
-        EventDetailsViewModel(eventService: eventService, image: image, id: id)
+    func makeEventDetailsViewModel(id: String) -> EventDetailsViewModel {
+        EventDetailsViewModel(eventService: eventService, id: id)
     }
 }

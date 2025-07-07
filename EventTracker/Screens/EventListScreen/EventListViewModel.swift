@@ -11,7 +11,7 @@ import CoreLocation
 
 enum EventListViewAction {
     case appear
-    case select(image: Image?, id: String)
+    case select(id: String)
     case filter
 }
 
@@ -23,7 +23,7 @@ struct EventListViewState {
 
 final class EventListViewModel: ObservableObject {
     enum NavigationEvent {
-        case select(image: Image?, id: String)
+        case select(id: String)
     }
     
     @Published private(set)var state = EventListViewState()
@@ -43,8 +43,8 @@ final class EventListViewModel: ObservableObject {
         switch action {
         case .appear:
             loadEvents()
-        case .select(let image, let id):
-            navigation.send(.select(image: image, id: id))
+        case .select(let id):
+            navigation.send(.select(id: id))
         case .filter:
             print("filter")
         }
@@ -52,13 +52,7 @@ final class EventListViewModel: ObservableObject {
     
     private func loadEvents() {
         state.isLoading = true
-        var location: CLLocationCoordinate2D
-        if let locationLive = locationManager.location {
-            location = locationLive
-        } else {
-            location = CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060)
-        }
-        eventService.getEvents(lat: location.latitude, lon: location.latitude)
+        eventService.getEvents()
             .sink(receiveCompletion: { [weak self] completion in
                 switch completion {
                 case .finished:

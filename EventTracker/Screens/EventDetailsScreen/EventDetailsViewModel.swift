@@ -21,12 +21,10 @@ final class EventDetailsViewModel: ObservableObject {
     private let eventService: EventServiceProtocol
     @Published private(set)var state = EventDetailsViewState()
     private var cancellables = Set<AnyCancellable>()
-    let image: Image?
     let id: String
     
-    init(eventService: EventServiceProtocol, image: Image?, id: String) {
+    init(eventService: EventServiceProtocol, id: String) {
         self.eventService = eventService
-        self.image = image
         self.id = id
     }
     
