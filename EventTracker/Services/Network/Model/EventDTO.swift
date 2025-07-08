@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct EventDTO: Codable {
+struct EventDTO: Codable, Cacheable {
     let eventName: String
     let eventDate: String
     let eventCategory: String
@@ -20,6 +20,7 @@ struct EventDTO: Codable {
     let eventAttendees: Int
     let eventTicketPrice: String
     let eventTicketId: UUID
+    typealias ManagedModel = CachedEvent
 
     enum CodingKeys: String, CodingKey {
         case eventName = "event_name"
@@ -49,6 +50,10 @@ struct EventDTO: Codable {
         eventAttendees = try container.decode(Int.self, forKey: .eventAttendees)
         eventTicketPrice = try container.decode(String.self, forKey: .eventTicketPrice)
         eventTicketId = try container.decode(UUID.self, forKey: .eventTicketId)
+    }
+    
+    func toManagedObject() -> CachedEvent {
+        return CachedEvent(event: self)
     }
 }
 

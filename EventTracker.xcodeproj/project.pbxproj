@@ -16,6 +16,7 @@
 		8473FE1B2E17DAA8008C1400 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8473FE1A2E17DAA2008C1400 /* LocationManager.swift */; };
 		848F4F0F2E1C32EB007AFE3A /* NetworkLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F4F0E2E1C32E4007AFE3A /* NetworkLogger.swift */; };
 		848F4F112E1C35F0007AFE3A /* CachedEventDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F4F102E1C35E4007AFE3A /* CachedEventDetails.swift */; };
+		848F4F152E1D9ADC007AFE3A /* Cacheable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 848F4F142E1D9ADC007AFE3A /* Cacheable.swift */; };
 		849D531B2E0AFCD8000A09B8 /* EventTrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53182E0AFCD8000A09B8 /* EventTrackerUITests.swift */; };
 		849D531C2E0AFCD8000A09B8 /* EventTrackerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D53192E0AFCD8000A09B8 /* EventTrackerUITestsLaunchTests.swift */; };
 		849D531F2E0AFCDC000A09B8 /* EventTrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 849D531D2E0AFCDC000A09B8 /* EventTrackerTests.swift */; };
@@ -63,6 +64,7 @@
 		8473FE1A2E17DAA2008C1400 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		848F4F0E2E1C32E4007AFE3A /* NetworkLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkLogger.swift; sourceTree = "<group>"; };
 		848F4F102E1C35E4007AFE3A /* CachedEventDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedEventDetails.swift; sourceTree = "<group>"; };
+		848F4F142E1D9ADC007AFE3A /* Cacheable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cacheable.swift; sourceTree = "<group>"; };
 		849D52832E0AF8A3000A09B8 /* EventTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EventTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		849D52992E0AF8A5000A09B8 /* EventTrackerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EventTrackerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		849D52A32E0AF8A5000A09B8 /* EventTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EventTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -146,6 +148,13 @@
 			path = LoggerService;
 			sourceTree = "<group>";
 		};
+		848F4F162E1DA372007AFE3A /* EventMapScreen */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = EventMapScreen;
+			sourceTree = "<group>";
+		};
 		849D527A2E0AF8A3000A09B8 = {
 			isa = PBXGroup;
 			children = (
@@ -220,6 +229,7 @@
 		849D533D2E0AFDD1000A09B8 /* Screens */ = {
 			isa = PBXGroup;
 			children = (
+				848F4F162E1DA372007AFE3A /* EventMapScreen */,
 				8473FE112E1590D2008C1400 /* EventDetailsScreen */,
 				849D534C2E0C7EA0000A09B8 /* EventListScreen */,
 			);
@@ -258,6 +268,7 @@
 		849D53472E0C7E26000A09B8 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				848F4F142E1D9ADC007AFE3A /* Cacheable.swift */,
 				8473FE182E16AF8F008C1400 /* EventDetailsDTO.swift */,
 				849D53532E0EE274000A09B8 /* EventDTO.swift */,
 			);
@@ -433,6 +444,7 @@
 				848F4F0F2E1C32EB007AFE3A /* NetworkLogger.swift in Sources */,
 				8473FE152E1590F7008C1400 /* EventDetailsViewModel.swift in Sources */,
 				849D53432E0C79BD000A09B8 /* EventService.swift in Sources */,
+				848F4F152E1D9ADC007AFE3A /* Cacheable.swift in Sources */,
 				849D53372E0AFD51000A09B8 /* AppCoordinator.swift in Sources */,
 				8473FE192E16AF94008C1400 /* EventDetailsDTO.swift in Sources */,
 				8473FE0B2E1553FD008C1400 /* EventCell.swift in Sources */,

@@ -1,14 +1,16 @@
 //
-//  EventModel.swift
+//  CachedEvent.swift
 //  EventTracker
 //
 //  Created by Admin on 6/28/25.
 //
+import Foundation
 import SwiftData
-import UIKit
 
 @Model
-final class CachedEvent {
+final class CachedEvent: ManagedObject {
+    typealias DTO = EventDTO
+    
     @Attribute(.unique) var id: UUID
     var eventName: String
     var eventDate: String
@@ -33,6 +35,10 @@ final class CachedEvent {
         self.eventDescription = event.eventDescription
         self.eventAttendees = event.eventAttendees
         self.eventTicketPrice = event.eventTicketPrice
+    }
+    
+    func toDTO() -> EventDTO {
+        return EventDTO(event: self)
     }
 }
 

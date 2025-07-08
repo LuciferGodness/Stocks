@@ -25,8 +25,16 @@ final class NetworkLogger {
             .joined(separator: "\n") ?? "None"
 
         var bodyString = "None"
+
         if let data = data {
-            bodyString = String(data: data, encoding: .utf8) ?? "Unreadable body"
+            if
+                let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
+                let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
+                let prettyString = String(data: prettyData, encoding: .utf8) {
+                bodyString = prettyString
+            } else {
+                bodyString = String(data: data, encoding: .utf8) ?? "Unreadable body"
+            }
         }
 
         print("""

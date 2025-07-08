@@ -9,6 +9,7 @@ import Foundation
 enum Endpoints {
     case getAllEvents
     case getEventByID(id: String)
+    case getEventsNear(lat: Double, lon: Double)
 }
 
 extension Endpoints {
@@ -22,6 +23,8 @@ extension Endpoints {
             "events.json"
         case .getEventByID(let id):
             "event/\(id).json/"
+        case .getEventsNear(let lat, let lon):
+            "/eventsNear.json?\(lat)/\(lon)/"
         }
     }
     
@@ -42,13 +45,6 @@ extension Endpoints {
         components.queryItems = [
             URLQueryItem(name: "key", value: "8686d0d0")
         ]
-        
-        switch self {
-        case .getAllEvents:
-            break
-        case .getEventByID:
-            break
-        }
         
         return components.url
     }

@@ -4,10 +4,14 @@
 //
 //  Created by Admin on 7/7/25.
 //
+import Foundation
 import SwiftData
 
 @Model
-final class CachedEventDetails {
+final class CachedEventDetails: ManagedObject {
+    typealias DTO = EventDetailsDTO
+    
+    @Attribute(.unique) let id: UUID
     var eventName: String
     var eventDescription: String
     var eventDate: String
@@ -18,15 +22,20 @@ final class CachedEventDetails {
     var eventCategory: String
     var eventCapacity: Int
     
-    init(eventName: String, eventDescription: String, eventDate: String, eventLocation: String, organizerName: String, organizerEmail: String, ticketPrice: Int, eventCategory: String, eventCapacity: Int) {
-        self.eventName = eventName
-        self.eventDescription = eventDescription
-        self.eventDate = eventDate
-        self.eventLocation = eventLocation
-        self.organizerName = organizerName
-        self.organizerEmail = organizerEmail
-        self.ticketPrice = ticketPrice
-        self.eventCategory = eventCategory
-        self.eventCapacity = eventCapacity
+    init(details: EventDetailsDTO) {
+        self.id = details.id
+        self.eventName = details.eventName
+        self.eventDescription = details.eventDescription
+        self.eventDate = details.eventDate
+        self.eventLocation = details.eventLocation
+        self.organizerName = details.organizerName
+        self.organizerEmail = details.organizerEmail
+        self.ticketPrice = details.ticketPrice
+        self.eventCategory = details.eventCategory
+        self.eventCapacity = details.eventCapacity
+    }
+    
+    func toDTO() -> EventDetailsDTO {
+        return EventDetailsDTO(eventDetails: self)
     }
 }

@@ -30,12 +30,12 @@ final class EventService: EventServiceProtocol {
             return apiService.request(.getAllEvents)
                 .handleEvents(receiveOutput: { [weak self] events in
                     Task {
-                        await self?.cacheService.save(events: events)
+                        await self?.cacheService.save(events)
                     }
                 })
                 .eraseToAnyPublisher()
         } else {
-           return Just(cacheService.loadEvents())
+            return Just(cacheService.load())
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         }
@@ -44,9 +44,14 @@ final class EventService: EventServiceProtocol {
     func getEventDetails(id: String) -> AnyPublisher<EventDetailsDTO, Error> {
         if monitor.currentPath.status == .satisfied {
             return apiService.request(.getEventByID(id: id))
+                .handleEvents(receiveOutput: { [weak self] eventDetail in
+                    Task {
+                        await self?.cacheService.save([eventDetail])
+                    }
+                })
                 .eraseToAnyPublisher()
         } else {
-            return Just(EventDetailsDTO(eventDetails: .init(eventName: "cd", eventDescription: "dsds", eventDate: "dsds", eventLocation: "dsd", organizerName: "dsd", organizerEmail: "dfed", ticketPrice: 1233, eventCategory: "dsd", eventCapacity: 121313)))
+            return Just(cacheService.load().first!)
                 .setFailureType(to: Error.self)
                 .eraseToAnyPublisher()
         }

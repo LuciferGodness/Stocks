@@ -6,6 +6,7 @@
 //
 
 import SwiftUICore
+import SwiftData
 
 final class DIContainer {
     private let apiService: APIServiceProtocol

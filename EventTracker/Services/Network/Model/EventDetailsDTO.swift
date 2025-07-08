@@ -5,7 +5,12 @@
 //  Created by Admin on 7/3/25.
 //
 
-struct EventDetailsDTO: Codable {
+import Foundation
+
+struct EventDetailsDTO: Codable, Cacheable {
+    typealias ManagedModel = CachedEventDetails
+    
+    let id: UUID
     let eventName: String
     let eventDescription: String
     let eventDate: String
@@ -17,6 +22,7 @@ struct EventDetailsDTO: Codable {
     let eventCapacity: Int
     
     enum CodingKeys: String, CodingKey {
+        case id = "event_ticket_id"
         case eventName = "event_name"
         case eventDescription = "event_description"
         case eventDate = "event_date"
@@ -40,11 +46,17 @@ struct EventDetailsDTO: Codable {
         ticketPrice = try container.decode(Int.self, forKey: .ticketPrice)
         eventCategory = try container.decode(String.self, forKey: .eventCategory)
         eventCapacity = try container.decode(Int.self, forKey: .eventCapacity)
+        id = try container.decode(UUID.self, forKey: .id)
+    }
+    
+    func toManagedObject() -> CachedEventDetails {
+        return CachedEventDetails(details: self)
     }
 }
 
 extension EventDetailsDTO {
     init(eventDetails: CachedEventDetails) {
+        self.id = eventDetails.id
         self.eventName = eventDetails.eventName
         self.eventDescription = eventDetails.eventDescription
         self.eventDate = eventDetails.eventDate

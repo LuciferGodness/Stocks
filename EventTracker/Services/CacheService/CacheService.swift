@@ -9,24 +9,23 @@ import Foundation
 import SwiftData
 
 protocol CacheServiceProtocol {
-    func save(events: [EventDTO]) async
-    func loadEvents() -> [EventDTO]
+    func save<T: Cacheable>(_ items: [T]) async
+    func load<T: Cacheable>() -> [T]
 }
 
 final class CacheService: CacheServiceProtocol {
-    private let container = try! ModelContainer(for: CachedEvent.self)
+    private let container: ModelContainer
     private var context: ModelContext!
 
-    
+    init() {
+        self.container = try! ModelContainer(for: CachedEvent.self, CachedEventDetails.self)
+    }
+
     @MainActor
-    func save(events: [EventDTO]) async {
-        context = container.mainContext
-        
-        for event in events {
-            guard let imageData = event.image?.pngData() else { continue }
-            
-            let model = CachedEvent(event: event)
-            
+    func save<T: Cacheable>(_ items: [T]) async {
+        self.context = container.mainContext
+        for item in items {
+            let model = item.toManagedObject()
             context.insert(model)
         }
         
@@ -34,13 +33,12 @@ final class CacheService: CacheServiceProtocol {
     }
     
     @MainActor
-    func loadEvents() -> [EventDTO] {
-        context = container.mainContext
-        
+    func load<T: Cacheable>() -> [T] {
+        self.context = container.mainContext
         do {
-            let results = try context.fetch(FetchDescriptor<CachedEvent>())
+            let results = try context.fetch(FetchDescriptor<T.ManagedModel>())
             
-            return results.map { EventDTO(event: $0) }
+            return results.map { $0.toDTO() }
         } catch {
             print("\(error)")
             return []

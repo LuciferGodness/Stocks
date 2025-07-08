@@ -17,10 +17,12 @@ struct EventDetailsView: View {
             } else if let error = viewModel.state.error {
                 Text(error)
             } else {
-                VStack(spacing: 16) {
-                    Text(viewModel.state.detail?.eventName ?? "")
-                    Text(viewModel.state.detail?.eventDescription ?? "")
-                    Text(viewModel.state.detail?.eventLocation ?? "")
+                ScrollView {
+                    VStack(spacing: 16) {
+                        Text(viewModel.state.detail?.eventName ?? "")
+                        Text(viewModel.state.detail?.eventDescription ?? "")
+                        Text(viewModel.state.detail?.eventLocation ?? "")
+                    }
                 }
             }
         }
