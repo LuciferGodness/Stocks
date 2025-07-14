@@ -11,60 +11,71 @@ struct EventCell: View {
     let event: EventDTO
     
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack() {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .top, spacing: 12) {
                 headerImage
-                
-                VStack(alignment: .leading) {
-                    Text(event.eventName)
-                        .font(.system(size: 22))
-                        .bold()
-                        .multilineTextAlignment(.leading)
-                    
-                    HStack {
-                        Text(event.eventCity)
-                            .foregroundStyle(.gray)
-                            .font(.system(size: 14))
-                            .multilineTextAlignment(.leading)
-                        Text(event.eventDate)
-                            .foregroundStyle(.gray)
-                            .font(.system(size: 14))
-                            .multilineTextAlignment(.leading)
-                        Text(event.eventCategory)
-                            .foregroundStyle(.gray)
-                            .font(.system(size: 14))
-                            .multilineTextAlignment(.leading)
-                    }
-                    
-                    Text(event.eventAttendees.description)
-                        .font(.system(size: 22))
-                        .bold()
-                        .multilineTextAlignment(.leading)
-                }
+                eventInfo
             }
             
-            Rectangle()
-                .fill(Color.gray.opacity(0.2))
-                .frame(height: 20)
-                .padding(.top, 6)
+            Divider()
+                .background(Color.gray.opacity(0.4))
         }
-        
     }
     
-    var headerImage: some View {
-        VStack() {
-            TabView {
-                if let image = event.image {
-                    Image(uiImage: image)
-                } else {
-                    let base64String = event.eventImage.components(separatedBy: ",").last
-                    let imageData = Data(base64Encoded: base64String ?? "")
-                    Image(uiImage: UIImage(data: imageData ?? Data()) ?? UIImage())
-                }
+    private var headerImage: some View {
+        ZStack {
+            Circle()
+                .fill(Color.white)
+                .frame(width: 75, height: 75)
+                .shadow(radius: 2)
+            
+            if let image = event.image {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 40, height: 40)
+            } else if let data = Data(base64Encoded: event.eventImage.components(separatedBy: ",").last ?? ""),
+                      let image = UIImage(data: data) {
+                Image(uiImage: image)
+                    .resizable()
+                    .frame(width: 40, height: 40)
+            } else {
+                Image(systemName: "photo")
+                    .resizable()
+                    .frame(width: 40, height: 40)
+                    .foregroundColor(.gray)
             }
         }
-        .tabViewStyle(.page)
-        .frame(width: 20, height: 20)
-        .clipped()
+        .padding(.leading, 8)
+    }
+    
+    private var eventInfo: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(event.eventCategory)
+                .font(.system(size: 16))
+                .foregroundColor(.gray)
+
+            HStack {
+                Text(event.eventName)
+                    .font(.system(size: 20))
+                    .bold()
+
+                Spacer()
+
+                Text(event.eventDate)
+                    .font(.system(size: 16))
+            }
+
+            HStack {
+                Text(event.eventCity)
+                    .font(.system(size: 16))
+
+                Spacer()
+
+                Text("\(event.eventAttendees)$")
+                    .font(.system(size: 16))
+                    .bold()
+            }
+        }
     }
 }

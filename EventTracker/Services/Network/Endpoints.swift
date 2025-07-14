@@ -22,9 +22,9 @@ extension Endpoints {
         case .getAllEvents:
             "events.json"
         case .getEventByID(let id):
-            "event/\(id).json/"
+            "event/\(id).json"
         case .getEventsNear(let lat, let lon):
-            "/eventsNear.json?\(lat)/\(lon)/"
+            "/eventsNear\(lat)/\(lon).json"
         }
     }
     
