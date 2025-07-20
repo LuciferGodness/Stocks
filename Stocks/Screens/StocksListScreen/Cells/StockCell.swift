@@ -7,56 +7,97 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 class StockCell: UITableViewCell {
-    let logo = UIImageView()
-    let title = UILabel()
-    let subtitle = UILabel()
-    let price = UILabel()
-    let change = UILabel()
+    let logoImageView = UIImageView()
+    let titleLabel = UILabel()
+    let subtitleLabel = UILabel()
+    let priceLabel = UILabel()
+    let changeLabel = UILabel()
+    
+    private var cancellable: AnyCancellable?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        setupViews()
+        layoutViews()
+    }
+    
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    private func setupViews() {
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.layer.cornerRadius = 8
+        logoImageView.clipsToBounds = true
         
-        [logo, title, subtitle, price, change].forEach {
-            contentView.addSubview($0)
-        }
+        titleLabel.font = .boldSystemFont(ofSize: 18)
+        subtitleLabel.font = .systemFont(ofSize: 12)
+        subtitleLabel.textColor = .gray
         
-        logo.snp.makeConstraints { $0.size.equalTo(40) }
-        title.font = .boldSystemFont(ofSize: 16)
-        subtitle.font = .systemFont(ofSize: 12)
-        subtitle.textColor = .gray
-        
-        let infoStack = UIStackView(arrangedSubviews: [title, subtitle])
+        priceLabel.font = .boldSystemFont(ofSize: 18)
+        priceLabel.textAlignment = .right
+        changeLabel.font = .systemFont(ofSize: 12)
+        changeLabel.textAlignment = .right
+    }
+    
+    private func layoutViews() {
+        contentView.addSubview(logoImageView)
+        let infoStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         infoStack.axis = .vertical
         infoStack.spacing = 2
         contentView.addSubview(infoStack)
-        infoStack.snp.makeConstraints { make in
-            make.left.equalTo(logo.snp.right).offset(12)
-            make.centerY.equalToSuperview()
-        }
-
-        price.font = .boldSystemFont(ofSize: 16)
-        change.font = .systemFont(ofSize: 12)
-        change.textColor = .systemGreen
-        let priceStack = UIStackView(arrangedSubviews: [price, change])
+        
+        let priceStack = UIStackView(arrangedSubviews: [priceLabel, changeLabel])
         priceStack.axis = .vertical
         priceStack.spacing = 2
         contentView.addSubview(priceStack)
+        
+        logoImageView.snp.makeConstraints { make in
+            make.left.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+            make.size.equalTo(50)
+        }
+        
+        infoStack.snp.makeConstraints { make in
+            make.left.equalTo(logoImageView.snp.right).offset(12)
+            make.centerY.equalToSuperview()
+            make.right.lessThanOrEqualTo(priceStack.snp.left).offset(-12)
+        }
+        
         priceStack.snp.makeConstraints { make in
             make.right.equalToSuperview().inset(16)
             make.centerY.equalToSuperview()
         }
     }
     
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        logoImageView.image = nil
+        cancellable?.cancel()
+    }
     
-    func configure(with stock: StocksDTO) {
-//        logo.image = UIImage(named: stock.logoName)
-        title.text = stock.symbol
-        subtitle.text = stock.name
-        price.text = "$\(stock.price)"
-        change.text = "+$\(stock.change) (\(stock.changePercent)%)"
+    func configure(with stock: StocksDTO, imageService: ImageServiceProtocol) {
+        titleLabel.text = stock.symbol
+        subtitleLabel.text = stock.name
+        
+        // Format Price
+        priceLabel.text = String(format: "$%.2f", stock.price)
+        
+        // Format Change
+        let changeValue = stock.change
+        let percentValue = stock.changePercent
+        let sign = changeValue >= 0 ? "+" : ""
+        let changeText = String(format: "%@$%.2f (%.2f%%)", sign, abs(changeValue), percentValue).replacingOccurrences(of: ".", with: ",")
+        changeLabel.text = changeText
+        changeLabel.textColor = changeValue >= 0 ? .systemGreen : .systemRed
+        
+        // Load Image
+        if let url = URL(string: stock.logo) {
+            cancellable = imageService.loadImage(from: url)
+                .sink { [weak self] image in
+                    self?.logoImageView.image = image ?? UIImage(systemName: "photo") // Placeholder
+                }
+        }
     }
 }
-

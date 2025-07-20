@@ -12,10 +12,12 @@ final class DIContainer {
     private let apiService: APIServiceProtocol
     private let cacheService: CacheServiceProtocol
     private let stocksService: StocksServiceProtocol
+    let imageService: ImageServiceProtocol
     
     init() {
         self.apiService = APIService()
         self.cacheService = CacheService()
+        self.imageService = ImageService()
         self.stocksService = StocksService(apiService: apiService, cacheService: cacheService)
     }
     

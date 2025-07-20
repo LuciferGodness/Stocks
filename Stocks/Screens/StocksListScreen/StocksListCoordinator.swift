@@ -22,7 +22,7 @@ final class StocksListCoordinator {
     
     func start() {
         let viewModel = container.makeEventListViewModel()
-        let stocksListView = StocksListView(viewModel: viewModel)
+        let stocksListView = StocksListView(viewModel: viewModel, imageService: container.imageService)
         
         navigationController.pushViewController(stocksListView, animated: true)
     }
