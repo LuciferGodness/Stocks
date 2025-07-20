@@ -3,6 +3,7 @@ import UIKit
 enum AppImages: String {
     case favourite
     case unfavourite
+    case backBtn
     
     var image: UIImage? {
         rawValue.image

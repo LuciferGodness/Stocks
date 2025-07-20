@@ -44,8 +44,7 @@ final class CustomSearchBar: UISearchBar {
         self.setSearchFieldBackgroundImage(clearImage, for: .normal)
         self.setBackgroundImage(clearImage, for: .any, barMetrics: .default)
         
-        // Настраиваем backButton и контейнер с кнопкой
-        backButton.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        backButton.setImage(AppImages.backBtn.image, for: .normal)
         backButton.tintColor = .black
         backButton.frame = CGRect(x: 0, y: 0, width: 36, height: 36)
         backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
@@ -53,7 +52,6 @@ final class CustomSearchBar: UISearchBar {
         backButtonContainer.addSubview(backButton)
         backButtonContainer.isHidden = true
         
-        // Настраиваем иконку лупы и контейнер с ней
         if let imageView = textField.leftView as? UIImageView {
             imageView.tintColor = .black
             imageView.contentMode = .scaleAspectFit
@@ -66,7 +64,6 @@ final class CustomSearchBar: UISearchBar {
             magnifyingGlassContainer.addSubview(magnifyingGlassImageView)
         }
         
-        // Изначально показываем лупу
         textField.leftView = magnifyingGlassContainer
         textField.leftViewMode = .always
     }

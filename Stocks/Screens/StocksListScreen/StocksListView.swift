@@ -14,8 +14,12 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     private let stocksLabel = UILabel()
     private let favouriteLabel = UILabel()
     private var activeLabel: UILabel!
-    let tableView = UITableView()
+    let tableView = UITableView(frame: .zero, style: .plain)
     private let searchSuggestionsView = SearchSuggestionsView()
+    private let segmentControlContainer = UIView()
+    private let searchResultsHeaderView = UIView()
+    private let searchResultsTitleLabel = UILabel()
+    private let showMoreButton = UIButton(type: .system)
     
     private var viewModel: StocksListViewModel!
     private var cancellables = Set<AnyCancellable>()
@@ -32,11 +36,11 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Stocks"
-        
         setupViews()
         setupSearchSuggestionsView()
         layoutViews()
+        setupSegmentControl()
+        setupSearchResultsHeader()
         bindViewModel()
         
         viewModel.send(.appear)
@@ -44,18 +48,12 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     private func setupViews() {
         searchBar.delegate = self
-        view.addSubview(searchBar)
+        searchBar.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: 56)
+        tableView.tableHeaderView = searchBar
         view.backgroundColor = .white
         
         stocksLabel.text = "Stocks"
         favouriteLabel.text = "Favourite"
-        
-        [stocksLabel, favouriteLabel].forEach { label in
-            label.isUserInteractionEnabled = true
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tabTapped(_:)))
-            label.addGestureRecognizer(tapGesture)
-            view.addSubview(label)
-        }
         
         activeLabel = stocksLabel
         updateTabAppearance()
@@ -68,24 +66,30 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     private func layoutViews() {
-        searchBar.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
-            make.left.right.equalToSuperview()
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.left.right.bottom.equalToSuperview()
         }
-
+    }
+    
+    private func setupSegmentControl() {
+        segmentControlContainer.backgroundColor = .systemBackground
+        [stocksLabel, favouriteLabel].forEach { label in
+            label.isUserInteractionEnabled = true
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tabTapped(_:)))
+            label.addGestureRecognizer(tapGesture)
+            segmentControlContainer.addSubview(label)
+        }
+        
         stocksLabel.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(20)
+            make.top.equalToSuperview().offset(20)
             make.left.equalToSuperview().inset(16)
+            make.bottom.equalToSuperview().offset(-16)
         }
 
         favouriteLabel.snp.makeConstraints { make in
             make.bottom.equalTo(stocksLabel)
             make.left.equalTo(stocksLabel.snp.right).offset(16)
-        }
-        
-        tableView.snp.makeConstraints { make in
-            make.top.equalTo(stocksLabel.snp.bottom).offset(16)
-            make.left.right.bottom.equalToSuperview()
         }
     }
     
@@ -122,7 +126,7 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         view.addSubview(searchSuggestionsView)
         searchSuggestionsView.isHidden = true
         searchSuggestionsView.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom)
+            make.top.equalTo(tableView.snp.top).offset(56)
             make.left.right.bottom.equalToSuperview()
         }
 
@@ -146,22 +150,21 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
             customSearchBar.showBackButton()
         }
 
-        stocksLabel.isHidden = true
-        favouriteLabel.isHidden = true
-        tableView.isHidden = true
+        tableView.isScrollEnabled = false
         searchSuggestionsView.isHidden = false
+        view.bringSubviewToFront(searchSuggestionsView)
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.send(.search(query: searchText))
         
         if searchText.isEmpty {
-            tableView.isHidden = true
             searchSuggestionsView.isHidden = false
+            view.bringSubviewToFront(searchSuggestionsView)
         } else {
-            tableView.isHidden = false
             searchSuggestionsView.isHidden = true
         }
+        tableView.reloadSections(IndexSet(integer: 0), with: .none)
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
@@ -173,10 +176,9 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         searchBar.resignFirstResponder()
 
         viewModel.send(.search(query: ""))
-        stocksLabel.isHidden = false
-        favouriteLabel.isHidden = false
-        tableView.isHidden = false
         searchSuggestionsView.isHidden = true
+        tableView.isScrollEnabled = true
+        tableView.reloadSections(IndexSet(integer: 0), with: .none)
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -223,5 +225,43 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         action.backgroundColor = isFavorite ? .red : .systemBlue
         
         return UISwipeActionsConfiguration(actions: [action])
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        if searchBar.text?.isEmpty == false {
+            return searchResultsHeaderView
+        } else {
+            return segmentControlContainer
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        if searchBar.text?.isEmpty == false {
+            return 44
+        } else {
+            return 70
+        }
+    }
+    
+    private func setupSearchResultsHeader() {
+        searchResultsHeaderView.backgroundColor = .systemBackground
+        
+        searchResultsTitleLabel.text = "Stocks"
+        searchResultsTitleLabel.font = .boldSystemFont(ofSize: 20)
+        searchResultsHeaderView.addSubview(searchResultsTitleLabel)
+        
+        showMoreButton.setTitle("Show more", for: .normal)
+        showMoreButton.setTitleColor(.black, for: .normal)
+        searchResultsHeaderView.addSubview(showMoreButton)
+        
+        searchResultsTitleLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+        }
+        
+        showMoreButton.snp.makeConstraints { make in
+            make.trailing.equalToSuperview().inset(16)
+            make.centerY.equalToSuperview()
+        }
     }
 }
