@@ -11,7 +11,6 @@ import SwiftData
 final class FavouriteStock: ManagedObject {
     typealias DTO = StocksDTO
     
-    //@Attribute(.unique) var id: UUID
     var logo: String
     var changePercent: Double
     var symbol: String

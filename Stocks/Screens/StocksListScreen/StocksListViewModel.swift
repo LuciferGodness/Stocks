@@ -20,7 +20,7 @@ struct StocksListViewState {
     var allStocks: [StocksDTO] = []
     var favoriteStocks: [StocksDTO] = []
     var filteredStocks: [StocksDTO] = []
-    var currentSegment: Int = 0 // 0 for Stocks, 1 for Favourite
+    var currentSegment: Int = 0
     var searchQuery: String = ""
     var error: String? = nil
     var isLoading: Bool = false
@@ -29,11 +29,13 @@ struct StocksListViewState {
 final class StocksListViewModel: ObservableObject {
     @Published private(set) var state = StocksListViewState()
     
+    let imageService: ImageServiceProtocol
     private let stocksService: StocksServiceProtocol
     private var cancellables = Set<AnyCancellable>()
     
-    init(stocksService: StocksServiceProtocol) {
+    init(stocksService: StocksServiceProtocol, imageService: ImageServiceProtocol) {
         self.stocksService = stocksService
+        self.imageService = imageService
     }
     
     func send(_ action: StocksListViewAction) {

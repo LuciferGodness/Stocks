@@ -1,6 +1,6 @@
 //
-//  EventListView.swift
-//  EventTracker
+//  StocksListView.swift
+//  Stocks
 //
 //  Created by Admin on 6/25/25.
 //
@@ -10,19 +10,19 @@ import SnapKit
 import Combine
 
 class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
-
-    let searchBar = UISearchBar()
-    let segmentedControl = UISegmentedControl(items: ["Stocks", "Favourite"])
+    let searchBar = CustomSearchBar()
+    private let stocksLabel = UILabel()
+    private let favouriteLabel = UILabel()
+    private var activeLabel: UILabel!
     let tableView = UITableView()
+    private let searchSuggestionsView = SearchSuggestionsView()
     
     private var viewModel: StocksListViewModel!
-    private var imageService: ImageServiceProtocol!
     private var cancellables = Set<AnyCancellable>()
-    private var searchBarTopConstraint: Constraint?
+
     
-    init(viewModel: StocksListViewModel, imageService: ImageServiceProtocol) {
+    init(viewModel: StocksListViewModel) {
         self.viewModel = viewModel
-        self.imageService = imageService
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -33,9 +33,9 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Stocks"
-        view.backgroundColor = .systemBackground
         
         setupViews()
+        setupSearchSuggestionsView()
         layoutViews()
         bindViewModel()
         
@@ -43,14 +43,22 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     private func setupViews() {
-        searchBar.placeholder = "Find company or ticker"
         searchBar.delegate = self
-        searchBar.searchBarStyle = .minimal
         view.addSubview(searchBar)
+        view.backgroundColor = .white
         
-        segmentedControl.selectedSegmentIndex = 0
-        segmentedControl.addTarget(self, action: #selector(segmentChanged), for: .valueChanged)
-        view.addSubview(segmentedControl)
+        stocksLabel.text = "Stocks"
+        favouriteLabel.text = "Favourite"
+        
+        [stocksLabel, favouriteLabel].forEach { label in
+            label.isUserInteractionEnabled = true
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tabTapped(_:)))
+            label.addGestureRecognizer(tapGesture)
+            view.addSubview(label)
+        }
+        
+        activeLabel = stocksLabel
+        updateTabAppearance()
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -61,17 +69,22 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     private func layoutViews() {
         searchBar.snp.makeConstraints { make in
-            self.searchBarTopConstraint = make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8).constraint
-            make.left.right.equalToSuperview().inset(16)
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8)
+            make.left.right.equalToSuperview()
         }
 
-        segmentedControl.snp.makeConstraints { make in
-            make.top.equalTo(searchBar.snp.bottom).offset(8)
-            make.left.right.equalToSuperview().inset(16)
+        stocksLabel.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom).offset(20)
+            make.left.equalToSuperview().inset(16)
+        }
+
+        favouriteLabel.snp.makeConstraints { make in
+            make.bottom.equalTo(stocksLabel)
+            make.left.equalTo(stocksLabel.snp.right).offset(16)
         }
         
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(segmentedControl.snp.bottom).offset(8)
+            make.top.equalTo(stocksLabel.snp.bottom).offset(16)
             make.left.right.bottom.equalToSuperview()
         }
     }
@@ -85,15 +98,87 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
             .store(in: &cancellables)
     }
     
-    @objc private func segmentChanged() {
-        viewModel.send(.selectSegment(index: segmentedControl.selectedSegmentIndex))
+    @objc private func tabTapped(_ sender: UITapGestureRecognizer) {
+        guard let tappedLabel = sender.view as? UILabel else { return }
+        activeLabel = tappedLabel
+        updateTabAppearance()
+        
+        let selectedIndex = (tappedLabel == stocksLabel) ? 0 : 1
+        viewModel.send(.selectSegment(index: selectedIndex))
+    }
+
+    private func updateTabAppearance() {
+        UIView.animate(withDuration: 0.3) {
+            self.stocksLabel.font = (self.activeLabel == self.stocksLabel) ? .boldSystemFont(ofSize: 32) : .systemFont(ofSize: 22, weight: .medium)
+            self.stocksLabel.textColor = (self.activeLabel == self.stocksLabel) ? .label : .systemGray
+
+            self.favouriteLabel.font = (self.activeLabel == self.favouriteLabel) ? .boldSystemFont(ofSize: 32) : .systemFont(ofSize: 22, weight: .medium)
+            self.favouriteLabel.textColor = (self.activeLabel == self.favouriteLabel) ? .label : .systemGray
+            self.view.layoutIfNeeded()
+        }
+    }
+
+    private func setupSearchSuggestionsView() {
+        view.addSubview(searchSuggestionsView)
+        searchSuggestionsView.isHidden = true
+        searchSuggestionsView.snp.makeConstraints { make in
+            make.top.equalTo(searchBar.snp.bottom)
+            make.left.right.bottom.equalToSuperview()
+        }
+
+        let popular = ["Apple", "Amazon", "Google", "Tesla", "Facebook", "Nvidia"]
+        let recent = ["Microsoft", "Intel", "AMD", "Yandex", "Nokia"]
+        searchSuggestionsView.configure(popular: popular, recent: recent)
+
+        searchSuggestionsView.onSuggestionTapped = { [weak self] suggestion in
+            guard let self = self else { return }
+            self.searchBar.text = suggestion
+            self.searchBar(self.searchBar, textDidChange: suggestion)
+            self.searchBar.resignFirstResponder()
+        }
     }
 
     // MARK: - UISearchBarDelegate
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        searchBar.setShowsCancelButton(false, animated: false)
+
+        if let customSearchBar = searchBar as? CustomSearchBar {
+            customSearchBar.showBackButton()
+        }
+
+        stocksLabel.isHidden = true
+        favouriteLabel.isHidden = true
+        tableView.isHidden = true
+        searchSuggestionsView.isHidden = false
+    }
+
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         viewModel.send(.search(query: searchText))
+        
+        if searchText.isEmpty {
+            tableView.isHidden = true
+            searchSuggestionsView.isHidden = false
+        } else {
+            tableView.isHidden = false
+            searchSuggestionsView.isHidden = true
+        }
     }
-    
+
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        if let customSearchBar = searchBar as? CustomSearchBar {
+            customSearchBar.hideBackButton()
+        }
+
+        searchBar.text = ""
+        searchBar.resignFirstResponder()
+
+        viewModel.send(.search(query: ""))
+        stocksLabel.isHidden = false
+        favouriteLabel.isHidden = false
+        tableView.isHidden = false
+        searchSuggestionsView.isHidden = true
+    }
+
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
     }
@@ -103,15 +188,24 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         return viewModel.state.filteredStocks.count
     }
     
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 84
+    }
+    
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "StockCell", for: indexPath) as? StockCell else {
             return UITableViewCell()
         }
         
         let stock = viewModel.state.filteredStocks[indexPath.row]
-        cell.configure(with: stock, imageService: imageService)
+        let isFavorite = viewModel.state.favoriteStocks.contains(where: { $0.symbol == stock.symbol })
+        let backgroundColor: UIColor = indexPath.row % 2 == 0 ? .systemBackground : .systemGray6
         
-        cell.contentView.backgroundColor = indexPath.row % 2 == 0 ? .systemGray6 : .systemBackground
+        cell.configure(with: stock, isFavorite: isFavorite, imageService: viewModel.imageService, backgroundColor: backgroundColor)
+
+        cell.onFavoriteButtonTapped = { [weak self] in
+            self?.viewModel.send(.toggleFavorite(stock: stock))
+        }
         
         return cell
     }
@@ -130,43 +224,4 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         
         return UISwipeActionsConfiguration(actions: [action])
     }
-    
-    // MARK: - ScrollView Delegate for hiding search bar
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = scrollView.contentOffset.y
-        let searchBarHeight = searchBar.frame.height
-        
-        if offsetY > searchBarHeight {
-            hideSearchBar()
-        } else {
-            showSearchBar()
-        }
-    }
-    
-    private func hideSearchBar() {
-        guard self.searchBarTopConstraint?.isActive == true else { return }
-        
-        self.searchBarTopConstraint?.deactivate()
-        searchBar.snp.makeConstraints { make in
-            self.searchBarTopConstraint = make.bottom.equalTo(view.safeAreaLayoutGuide.snp.top).constraint
-        }
-        
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-
-    private func showSearchBar() {
-        guard self.searchBarTopConstraint?.isActive == false else { return }
-
-        self.searchBarTopConstraint?.deactivate()
-        searchBar.snp.makeConstraints { make in
-            self.searchBarTopConstraint = make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(8).constraint
-        }
-
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
 }
-

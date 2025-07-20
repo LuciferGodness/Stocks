@@ -1,103 +1,141 @@
-//
-//  Eventcell.swift
-//  EventTracker
-//
-//  Created by Admin on 7/2/25.
-//
-
 import UIKit
 import SnapKit
 import Combine
 
 class StockCell: UITableViewCell {
-    let logoImageView = UIImageView()
-    let titleLabel = UILabel()
-    let subtitleLabel = UILabel()
-    let priceLabel = UILabel()
-    let changeLabel = UILabel()
-    
-    private var cancellable: AnyCancellable?
-    
+    private let containerView = UIView()
+    private let logoImageView = UIImageView()
+    private let titleLabel = UILabel()
+    private let subtitleLabel = UILabel()
+    private let priceLabel = UILabel()
+    private let changeLabel = UILabel()
+    private let favoriteImageView = UIImageView()
+
+    var onFavoriteButtonTapped: (() -> Void)?
+
+    private var imageCancellable: AnyCancellable?
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        selectionStyle = .none
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
         setupViews()
         layoutViews()
+        setupFavoriteTap()
     }
-    
-    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
-    
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private func setupViews() {
+        containerView.layer.cornerRadius = 16
+        containerView.clipsToBounds = true
+        contentView.addSubview(containerView)
+
         logoImageView.contentMode = .scaleAspectFit
         logoImageView.layer.cornerRadius = 8
         logoImageView.clipsToBounds = true
-        
+
         titleLabel.font = .boldSystemFont(ofSize: 18)
         subtitleLabel.font = .systemFont(ofSize: 12)
-        subtitleLabel.textColor = .gray
-        
+
         priceLabel.font = .boldSystemFont(ofSize: 18)
         priceLabel.textAlignment = .right
         changeLabel.font = .systemFont(ofSize: 12)
         changeLabel.textAlignment = .right
+        
+        favoriteImageView.contentMode = .scaleAspectFit
+        favoriteImageView.isUserInteractionEnabled = true
     }
-    
+
     private func layoutViews() {
-        contentView.addSubview(logoImageView)
         let infoStack = UIStackView(arrangedSubviews: [titleLabel, subtitleLabel])
         infoStack.axis = .vertical
         infoStack.spacing = 2
-        contentView.addSubview(infoStack)
-        
+        infoStack.alignment = .leading
+
         let priceStack = UIStackView(arrangedSubviews: [priceLabel, changeLabel])
         priceStack.axis = .vertical
         priceStack.spacing = 2
-        contentView.addSubview(priceStack)
-        
-        logoImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(16)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(50)
+        priceStack.alignment = .trailing
+
+        [logoImageView, infoStack, favoriteImageView, priceStack].forEach { containerView.addSubview($0) }
+
+        containerView.snp.makeConstraints { make in
+            make.top.bottom.equalToSuperview().inset(4)
+            make.left.right.equalToSuperview().inset(16)
         }
-        
+
+        logoImageView.snp.makeConstraints { make in
+            make.left.equalToSuperview().offset(12)
+            make.centerY.equalToSuperview()
+            make.width.height.equalTo(50)
+        }
+
         infoStack.snp.makeConstraints { make in
             make.left.equalTo(logoImageView.snp.right).offset(12)
             make.centerY.equalToSuperview()
-            make.right.lessThanOrEqualTo(priceStack.snp.left).offset(-12)
         }
-        
+
+        favoriteImageView.snp.makeConstraints { make in
+            make.left.equalTo(titleLabel.snp.right).offset(8)
+            make.centerY.equalTo(titleLabel.snp.centerY)
+            make.width.equalTo(16)
+            make.height.equalTo(18)
+        }
+
         priceStack.snp.makeConstraints { make in
-            make.right.equalToSuperview().inset(16)
+            make.right.equalToSuperview().inset(12)
             make.centerY.equalToSuperview()
+            make.left.greaterThanOrEqualTo(favoriteImageView.snp.right).offset(8)
         }
     }
-    
+
+    private func setupFavoriteTap() {
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(favoriteTapped))
+        favoriteImageView.addGestureRecognizer(tapGesture)
+    }
+
+    @objc private func favoriteTapped() {
+        onFavoriteButtonTapped?()
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         logoImageView.image = nil
-        cancellable?.cancel()
+        imageCancellable?.cancel()
+        onFavoriteButtonTapped = nil
     }
-    
-    func configure(with stock: StocksDTO, imageService: ImageServiceProtocol) {
+
+    func configure(with stock: StocksDTO, isFavorite: Bool, imageService: ImageServiceProtocol, backgroundColor: UIColor) {
         titleLabel.text = stock.symbol
         subtitleLabel.text = stock.name
+        let priceFormatter = NumberFormatter()
+        priceFormatter.numberStyle = .decimal
+        priceFormatter.groupingSeparator = " "
+        priceFormatter.decimalSeparator = "."
+        priceFormatter.minimumFractionDigits = 0
+        priceFormatter.maximumFractionDigits = 2
         
-        // Format Price
-        priceLabel.text = String(format: "$%.2f", stock.price)
-        
-        // Format Change
-        let changeValue = stock.change
-        let percentValue = stock.changePercent
-        let sign = changeValue >= 0 ? "+" : ""
-        let changeText = String(format: "%@$%.2f (%.2f%%)", sign, abs(changeValue), percentValue).replacingOccurrences(of: ".", with: ",")
-        changeLabel.text = changeText
-        changeLabel.textColor = changeValue >= 0 ? .systemGreen : .systemRed
-        
-        // Load Image
-        if let url = URL(string: stock.logo) {
-            cancellable = imageService.loadImage(from: url)
-                .sink { [weak self] image in
-                    self?.logoImageView.image = image ?? UIImage(systemName: "photo") // Placeholder
-                }
+        if let formattedPrice = priceFormatter.string(from: NSNumber(value: stock.price)) {
+            priceLabel.text = "$" + formattedPrice
         }
+        
+        let sign = stock.change >= 0 ? "+" : "−"
+        let dollarChange = String(format: "%.2f", abs(stock.change))
+        let percentChange = String(format: "%.2f", abs(stock.changePercent)).replacingOccurrences(of: ".", with: ",")
+        changeLabel.text = "\(sign)$\(dollarChange) (\(percentChange)%)"
+        changeLabel.textColor = stock.change >= 0 ? .systemGreen : .systemRed
+        
+        favoriteImageView.image = isFavorite ? AppImages.favourite.image : AppImages.unfavourite.image
+        
+        containerView.backgroundColor = backgroundColor
+        
+        imageCancellable = imageService.loadImage(from: URL(string: stock.logo)!)
+            .sink { [weak self] image in
+                self?.logoImageView.image = image ?? UIImage(systemName: "photo")
+            }
     }
 }

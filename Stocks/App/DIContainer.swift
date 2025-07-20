@@ -12,7 +12,7 @@ final class DIContainer {
     private let apiService: APIServiceProtocol
     private let cacheService: CacheServiceProtocol
     private let stocksService: StocksServiceProtocol
-    let imageService: ImageServiceProtocol
+    private let imageService: ImageServiceProtocol
     
     init() {
         self.apiService = APIService()
@@ -22,6 +22,6 @@ final class DIContainer {
     }
     
     func makeEventListViewModel() -> StocksListViewModel {
-        StocksListViewModel(stocksService: stocksService)
+        StocksListViewModel(stocksService: stocksService, imageService: imageService)
     }
 }

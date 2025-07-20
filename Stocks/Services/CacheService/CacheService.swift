@@ -59,8 +59,6 @@ final class CacheService: CacheServiceProtocol {
     @MainActor
     func remove<T: Cacheable>(_ item: T) async {
         self.context = container.mainContext
-        // We need a way to uniquely identify the object to delete.
-        // Assuming symbol is unique for stocks.
         guard let symbol = (item as? StocksDTO)?.symbol else { return }
         
         do {
@@ -90,14 +88,5 @@ final class CacheService: CacheServiceProtocol {
             return false
         }
     }
-//    self.context = container.mainContext
-//    do {
-//        let results = try context.fetch(FetchDescriptor<T.ManagedModel>())
-//        
-//        return results.map { $0.toDTO() }
-//    } catch {
-//        print("\(error)")
-//        return []
-//    }
 }
 
