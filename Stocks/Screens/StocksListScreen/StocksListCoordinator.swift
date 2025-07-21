@@ -20,7 +20,7 @@ final class StocksListCoordinator {
         self.container = container
     }
     
-    func start() {
+    @MainActor func start() {
         let viewModel = container.makeEventListViewModel()
         let stocksListView = StocksListView(viewModel: viewModel)
         

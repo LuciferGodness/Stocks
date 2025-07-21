@@ -9,7 +9,6 @@ import Foundation
 import SwiftData
 
 protocol CacheServiceProtocol {
-    func save<T: Cacheable>(_ items: [T]) async
     func load<T: Cacheable>() -> [T]
     func add<T: Cacheable>(_ item: T) async
     func remove<T: Cacheable>(_ item: T) async
@@ -22,17 +21,6 @@ final class CacheService: CacheServiceProtocol {
     
     init() {
         self.container = try! ModelContainer(for: FavouriteStock.self)
-    }
-    
-    @MainActor
-    func save<T: Cacheable>(_ items: [T]) async {
-        self.context = container.mainContext
-        for item in items {
-            let model = item.toManagedObject()
-            context.insert(model)
-        }
-        
-        try? context.save()
     }
     
     @MainActor

@@ -2,7 +2,7 @@ import UIKit
 import SnapKit
 import Combine
 
-class StockCell: UITableViewCell {
+final class StockCell: UITableViewCell {
     private let containerView = UIView()
     private let logoImageView = UIImageView()
     private let titleLabel = UILabel()
@@ -12,14 +12,11 @@ class StockCell: UITableViewCell {
     private let favoriteImageView = UIImageView()
 
     var onFavoriteButtonTapped: (() -> Void)?
-
     private var imageCancellable: AnyCancellable?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        selectionStyle = .none
-        backgroundColor = .clear
-        contentView.backgroundColor = .clear
+        setupCell()
         setupViews()
         layoutViews()
         setupFavoriteTap()
@@ -27,6 +24,38 @@ class StockCell: UITableViewCell {
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        logoImageView.image = nil
+        imageCancellable?.cancel()
+        onFavoriteButtonTapped = nil
+    }
+
+    func configure(with stock: StocksDTO, isFavorite: Bool, imageService: ImageServiceProtocol, backgroundColor: UIColor) {
+        titleLabel.text = stock.symbol
+        subtitleLabel.text = stock.name
+        priceLabel.text = formatPrice(stock.price)
+        
+        changeLabel.text = formatChange(amount: stock.change, percent: stock.changePercent)
+        changeLabel.textColor = stock.change >= 0 ? .systemGreen : .systemRed
+
+        favoriteImageView.image = isFavorite ? AppImages.favourite.image : AppImages.unfavourite.image
+        containerView.backgroundColor = backgroundColor
+
+        if let url = URL(string: stock.logo) {
+            imageCancellable = imageService.loadImage(from: url)
+                .sink { [weak self] image in
+                    self?.logoImageView.image = image ?? UIImage(systemName: "photo")
+                }
+        }
+    }
+
+    private func setupCell() {
+        selectionStyle = .none
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
     }
 
     private func setupViews() {
@@ -43,9 +72,10 @@ class StockCell: UITableViewCell {
 
         priceLabel.font = .boldSystemFont(ofSize: 18)
         priceLabel.textAlignment = .right
+
         changeLabel.font = .systemFont(ofSize: 12)
         changeLabel.textAlignment = .right
-        
+
         favoriteImageView.contentMode = .scaleAspectFit
         favoriteImageView.isUserInteractionEnabled = true
     }
@@ -61,17 +91,18 @@ class StockCell: UITableViewCell {
         priceStack.spacing = 2
         priceStack.alignment = .trailing
 
-        [logoImageView, infoStack, favoriteImageView, priceStack].forEach { containerView.addSubview($0) }
+        [logoImageView, infoStack, favoriteImageView, priceStack].forEach {
+            containerView.addSubview($0)
+        }
 
         containerView.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview().inset(4)
-            make.left.right.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(4)
         }
 
         logoImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().offset(12)
             make.centerY.equalToSuperview()
-            make.width.height.equalTo(50)
+            make.size.equalTo(50)
         }
 
         infoStack.snp.makeConstraints { make in
@@ -81,9 +112,8 @@ class StockCell: UITableViewCell {
 
         favoriteImageView.snp.makeConstraints { make in
             make.left.equalTo(titleLabel.snp.right).offset(8)
-            make.centerY.equalTo(titleLabel.snp.centerY)
-            make.width.equalTo(16)
-            make.height.equalTo(18)
+            make.centerY.equalTo(titleLabel)
+            make.size.equalTo(CGSize(width: 16, height: 18))
         }
 
         priceStack.snp.makeConstraints { make in
@@ -102,40 +132,20 @@ class StockCell: UITableViewCell {
         onFavoriteButtonTapped?()
     }
 
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        logoImageView.image = nil
-        imageCancellable?.cancel()
-        onFavoriteButtonTapped = nil
+    private func formatPrice(_ price: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.groupingSeparator = " "
+        formatter.decimalSeparator = "."
+        formatter.minimumFractionDigits = 0
+        formatter.maximumFractionDigits = 2
+        return "$" + (formatter.string(from: NSNumber(value: price)) ?? "–")
     }
 
-    func configure(with stock: StocksDTO, isFavorite: Bool, imageService: ImageServiceProtocol, backgroundColor: UIColor) {
-        titleLabel.text = stock.symbol
-        subtitleLabel.text = stock.name
-        let priceFormatter = NumberFormatter()
-        priceFormatter.numberStyle = .decimal
-        priceFormatter.groupingSeparator = " "
-        priceFormatter.decimalSeparator = "."
-        priceFormatter.minimumFractionDigits = 0
-        priceFormatter.maximumFractionDigits = 2
-        
-        if let formattedPrice = priceFormatter.string(from: NSNumber(value: stock.price)) {
-            priceLabel.text = "$" + formattedPrice
-        }
-        
-        let sign = stock.change >= 0 ? "+" : "−"
-        let dollarChange = String(format: "%.2f", abs(stock.change))
-        let percentChange = String(format: "%.2f", abs(stock.changePercent)).replacingOccurrences(of: ".", with: ",")
-        changeLabel.text = "\(sign)$\(dollarChange) (\(percentChange)%)"
-        changeLabel.textColor = stock.change >= 0 ? .systemGreen : .systemRed
-        
-        favoriteImageView.image = isFavorite ? AppImages.favourite.image : AppImages.unfavourite.image
-        
-        containerView.backgroundColor = backgroundColor
-        
-        imageCancellable = imageService.loadImage(from: URL(string: stock.logo)!)
-            .sink { [weak self] image in
-                self?.logoImageView.image = image ?? UIImage(systemName: "photo")
-            }
+    private func formatChange(amount: Double, percent: Double) -> String {
+        let sign = amount >= 0 ? "+" : "−"
+        let formattedAmount = String(format: "%.2f", abs(amount))
+        let formattedPercent = String(format: "%.2f", abs(percent)).replacingOccurrences(of: ".", with: ",")
+        return "\(sign)$\(formattedAmount) (\(formattedPercent)%)"
     }
 }

@@ -4,6 +4,7 @@ enum AppImages: String {
     case favourite
     case unfavourite
     case backBtn
+    case searchIcon
     
     var image: UIImage? {
         rawValue.image

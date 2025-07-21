@@ -19,7 +19,7 @@ final class AppCoordinator {
         self.container = container
     }
     
-    func start() {
+    @MainActor func start() {
         let stocksListCoordinator = StocksListCoordinator(
             navigationController: navigationController,
             container: container

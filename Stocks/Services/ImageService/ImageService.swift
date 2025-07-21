@@ -5,7 +5,7 @@ protocol ImageServiceProtocol {
     func loadImage(from url: URL) -> AnyPublisher<UIImage?, Never>
 }
 
-class ImageService: ImageServiceProtocol {
+final class ImageService: ImageServiceProtocol {
     private let cache = NSCache<NSURL, UIImage>()
     
     func loadImage(from url: URL) -> AnyPublisher<UIImage?, Never> {

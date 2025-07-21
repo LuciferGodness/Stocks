@@ -9,19 +9,21 @@ import UIKit
 import SnapKit
 import Combine
 
-class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+final class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
     let searchBar = CustomSearchBar()
     private let stocksLabel = UILabel()
     private let favouriteLabel = UILabel()
     private var activeLabel: UILabel!
     let tableView = UITableView(frame: .zero, style: .plain)
     private let searchSuggestionsView = SearchSuggestionsView()
-    private let segmentControlContainer = UIView()
-    private let searchResultsHeaderView = UIView()
+    private let segmentSwitcherView = SegmentSwitcherView()
+    private let searchResultsHeaderView = SearchResultsHeaderView()
+
     private let searchResultsTitleLabel = UILabel()
     private let showMoreButton = UIButton(type: .system)
     
     private var viewModel: StocksListViewModel!
+    private var searchTextSubject = PassthroughSubject<String, Never>()
     private var cancellables = Set<AnyCancellable>()
 
     
@@ -42,6 +44,7 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         setupSegmentControl()
         setupSearchResultsHeader()
         bindViewModel()
+        setupSearchDebounce()
         
         viewModel.send(.appear)
     }
@@ -68,38 +71,43 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     private func layoutViews() {
         tableView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
-            make.left.right.bottom.equalToSuperview()
+            make.left.right.equalToSuperview().inset(10)
+            make.bottom.equalToSuperview()
         }
     }
     
     private func setupSegmentControl() {
-        segmentControlContainer.backgroundColor = .systemBackground
-        [stocksLabel, favouriteLabel].forEach { label in
-            label.isUserInteractionEnabled = true
-            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tabTapped(_:)))
-            label.addGestureRecognizer(tapGesture)
-            segmentControlContainer.addSubview(label)
-        }
-        
-        stocksLabel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.left.equalToSuperview().inset(16)
-            make.bottom.equalToSuperview().offset(-16)
-        }
-
-        favouriteLabel.snp.makeConstraints { make in
-            make.bottom.equalTo(stocksLabel)
-            make.left.equalTo(stocksLabel.snp.right).offset(16)
+        segmentSwitcherView.onSegmentChanged = { [weak self] index in
+            self?.viewModel.send(.selectSegment(index: index))
         }
     }
     
     private func bindViewModel() {
         viewModel.$state
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] _ in
+            .sink { [weak self] state in
                 self?.tableView.reloadData()
+                if let error = state.error {
+                    self?.showError(error)
+                }
             }
             .store(in: &cancellables)
+    }
+    
+    private func setupSearchDebounce() {
+        searchTextSubject
+            .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
+            .sink { [weak self] text in
+                self?.viewModel.send(.search(query: text))
+                self?.tableView.reloadSections(IndexSet(integer: 0), with: .none)
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func showError(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     @objc private func tabTapped(_ sender: UITapGestureRecognizer) {
@@ -127,7 +135,8 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         searchSuggestionsView.isHidden = true
         searchSuggestionsView.snp.makeConstraints { make in
             make.top.equalTo(tableView.snp.top).offset(56)
-            make.left.right.bottom.equalToSuperview()
+            make.bottom.equalToSuperview()
+            make.left.right.equalToSuperview().inset(5)
         }
 
         let popular = ["Apple", "Amazon", "Google", "Tesla", "Facebook", "Nvidia"]
@@ -156,7 +165,7 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.send(.search(query: searchText))
+        searchTextSubject.send(searchText)
         
         if searchText.isEmpty {
             searchSuggestionsView.isHidden = false
@@ -231,7 +240,7 @@ class StocksListView: UIViewController, UITableViewDelegate, UITableViewDataSour
         if searchBar.text?.isEmpty == false {
             return searchResultsHeaderView
         } else {
-            return segmentControlContainer
+            return segmentSwitcherView
         }
     }
     

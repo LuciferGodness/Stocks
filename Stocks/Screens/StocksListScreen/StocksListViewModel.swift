@@ -26,80 +26,83 @@ struct StocksListViewState {
     var isLoading: Bool = false
 }
 
+@MainActor
 final class StocksListViewModel: ObservableObject {
     @Published private(set) var state = StocksListViewState()
-    
+
     let imageService: ImageServiceProtocol
     private let stocksService: StocksServiceProtocol
     private var cancellables = Set<AnyCancellable>()
-    
+
     init(stocksService: StocksServiceProtocol, imageService: ImageServiceProtocol) {
         self.stocksService = stocksService
         self.imageService = imageService
     }
-    
+
     func send(_ action: StocksListViewAction) {
         switch action {
         case .appear:
             loadInitialData()
         case .search(let query):
             state.searchQuery = query
-            filterStocks()
+            updateFilteredStocks()
         case .selectSegment(let index):
             state.currentSegment = index
-            filterStocks()
+            updateFilteredStocks()
         case .toggleFavorite(let stock):
-            toggleFavorite(stock: stock)
+            toggleFavorite(stock)
         }
     }
-    
+
     private func loadInitialData() {
         loadFavorites()
         loadStocks()
     }
-    
+
     private func loadStocks() {
         state.isLoading = true
+        
         stocksService.getStocks()
+            .receive(on: DispatchQueue.main)
             .sink(receiveCompletion: { [weak self] completion in
-                self?.state.isLoading = false
-                switch completion {
-                case .failure(let failure):
-                    self?.state.error = failure.localizedDescription
-                case .finished:
-                    break
+                guard let self = self else { return }
+                self.state.isLoading = false
+                
+                if case .failure(let error) = completion {
+                    self.state.error = error.localizedDescription
                 }
             }, receiveValue: { [weak self] stocks in
-                self?.state.allStocks = stocks
-                self?.filterStocks()
+                guard let self = self else { return }
+                self.state.allStocks = stocks
+                self.updateFilteredStocks()
             })
             .store(in: &cancellables)
     }
-    
+
     private func loadFavorites() {
         state.favoriteStocks = stocksService.getFavoriteStocks()
-        filterStocks()
+        updateFilteredStocks()
     }
-    
-    private func toggleFavorite(stock: StocksDTO) {
+
+    private func toggleFavorite(_ stock: StocksDTO) {
         Task {
             await stocksService.toggleFavorite(stock: stock)
-            DispatchQueue.main.async {
-                self.loadFavorites()
-            }
+            self.loadFavorites()
         }
     }
-    
-    private func filterStocks() {
-        let stocksToFilter = state.currentSegment == 0 ? state.allStocks : state.favoriteStocks
+
+    private func updateFilteredStocks() {
+        let source = state.currentSegment == 0 ? state.allStocks : state.favoriteStocks
         
-        if state.searchQuery.isEmpty {
-            state.filteredStocks = stocksToFilter
-        } else {
-            state.filteredStocks = stocksToFilter.filter { 
-                $0.symbol.localizedCaseInsensitiveContains(state.searchQuery) || 
-                $0.name.localizedCaseInsensitiveContains(state.searchQuery) 
-            }
+        guard !state.searchQuery.isEmpty else {
+            state.filteredStocks = source
+            return
+        }
+
+        let query = state.searchQuery.lowercased()
+
+        state.filteredStocks = source.filter {
+            $0.symbol.lowercased().contains(query) || $0.name.lowercased().contains(query)
         }
     }
 }

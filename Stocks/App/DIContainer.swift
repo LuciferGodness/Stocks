@@ -21,7 +21,7 @@ final class DIContainer {
         self.stocksService = StocksService(apiService: apiService, cacheService: cacheService)
     }
     
-    func makeEventListViewModel() -> StocksListViewModel {
+    @MainActor func makeEventListViewModel() -> StocksListViewModel {
         StocksListViewModel(stocksService: stocksService, imageService: imageService)
     }
 }
